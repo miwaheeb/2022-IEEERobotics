@@ -14,7 +14,7 @@
   reference temperature measurement device.
 */
 
-#include<Wire.h>
+#include <Arduino.h>
 #include <math.h>
 #define MSGSIZE 80
 #define MSGPRINTS 10
