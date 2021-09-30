@@ -1,0 +1,23 @@
+{
+	"folders": 
+	[
+		{
+			/* robot code */
+			"name": "Firmware",
+			"path": "../firmware"
+		},
+		{
+			/* component testing */
+			"name": "Testing",
+			"path": "../testing"
+		},
+
+		{
+			/* everything else */
+			"name": "Miscellaneous",
+			"path": "."
+		},
+	],
+	
+	"settings": {}
+}
