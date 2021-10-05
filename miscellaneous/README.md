@@ -11,8 +11,9 @@
 	- Click here to login to Github in VS Code
 	
 	 	![github](https://user-images.githubusercontent.com/77407402/135941339-197cfc96-9bb8-4b93-b85b-82dd0be3c8b3.png)
-	- Install PlatformIO 
+
 	- Clone the repository with this link https://github.com/Mina-W/2022-IEEERobotics.git
+	- Install PlatformIO (picture)
 	- At the bottom, set your default environment to Testing or Firmware as applicable
 
 - Building the firmware
