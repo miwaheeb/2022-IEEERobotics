@@ -9,9 +9,11 @@
  
 void setup()  
 {
-  digitalWrite(Relay, RELAY_OFF);      // initialise the relay to off
+  /********************** initial relay state setup **********************/
+  digitalWrite(Relay, RELAY_OFF);   // initialise the relay to off
   pinMode(Relay, OUTPUT);   
   delay(1000); 
+ /************************************************************************/
 }
  
 void loop() 				// Turn the relay on and off in sequence
