@@ -2,21 +2,21 @@
 	"folders": 
 	[
 		{
-			/* robot code */
 			"name": "Firmware",
 			"path": "./firmware"
 		},
 		{
-			/* component testing */
 			"name": "Testing",
 			"path": "./testing"
 		},
-
 		{
-			/* everything else */
 			"name": "Miscellaneous",
 			"path": "./miscellaneous"
 		},
+		{
+			"name": "Sharp IR Sensor",
+			"path": "Sharp IR Sensor"
+		}
 	],
 	
 	"settings": {}
