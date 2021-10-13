@@ -23,5 +23,7 @@
 - Back to VS Code
 	- Install PlatformIO (picture)
 	- At the bottom, set your default environment to Testing or Firmware as applicable (picture)
+	- You may get an error if you open files in an environment you haven't selected
+	- If you have squigglies and everything "should" be working, ctrl+alt+p and type rebuild index
 
 - Building the firmware
