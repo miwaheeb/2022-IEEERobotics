@@ -1,98 +1,227 @@
 #include "main.h"
-MPU6050 accel;
+#include <stdbool.h>
+#include <avr/interrupt.h>
+
+Adafruit_VL53L0X lidar1 = Adafruit_VL53L0X();
+Adafruit_VL53L0X lidar2 = Adafruit_VL53L0X();
+
+
+#define LIDAR1_ENABLE 6
+#define LIDAR2_ENABLE 8
+#define SAMPLE_RATE 1 
+
+/*Time in milliseconds*/
+#define THRESHOLD_TIME 5
+#define FILTER_LENGTH SAMPLE_RATE*THRESHOLD_TIME
+
+void device_setup();
+const uint32_t filterLength = FILTER_LENGTH;
+uint16_t sampleIndex = 0,  sampleRate = 0, thresholdTime = 0;
+float weightedSample = 0, distanceAverage = 0;
+float sampleWindow[filterLength];
+bool measureFlag = false;
 
 void setup()  
 { 
-  //accel_setup();
-  dmp_setup();
+  TIMSK2 = 0;
+  //pinMode(OUTPUT, LIDAR1_ENABLE);
+  //digitalWrite(LIDAR1_ENABLE, LOW);
+  //pinMode(OUTPUT, LIDAR2_ENABLE);
+  //digitalWrite(LIDAR2_ENABLE, LOW);
+	device_setup();
+  delay(100);
+  TCCR2B = 1 << CS22 | 1 << CS21 | 0 << CS20;
+  Serial.println("Setup complete. Beginning\n");
+  delay(500);
+  TIMSK2 = 1;
 }
  
-void loop() 				// Turn the relay on and off in sequence
+void loop() 				
 {
-  //read_acceleration();
-  //delay(500);
-  //dmp_loop();
+
+  while(!measureFlag){};
+  measureFlag = false;
+  VL53L0X_RangingMeasurementData_t measure;
+	lidar1.rangingTest(&measure, false);
+
+	weightedSample = measure.RangeMilliMeter/filterLength;
+  //lidar2.rangingTest(&measure,false);
+	distanceAverage += weightedSample;
+	sampleIndex = (sampleIndex + 1) % filterLength;
+	distanceAverage -= sampleWindow[sampleIndex];
+	sampleWindow[sampleIndex] = weightedSample;
+
+	if(distanceAverage > 50 && distanceAverage < 80 && measure.RangeMilliMeter > 50 && measure.RangeMilliMeter < 80)
+		Serial.println("\tTRIGGERED\n");
 }
 
 
-void accel_setup()
+void device_setup()
 {
-  Wire.begin();
-  Wire.setClock(I2C_CLOCK); // 400kHz I2C clock. Comment this line if having compilation difficulties
-
+	
   // initialize serial communication
   Serial.begin(BAUD_RATE);
   pinMode(INTERRUPT_PIN, INPUT);
 
   Wire.begin();
-  Wire.setClock(I2C_CLOCK); // 400kHz I2C clock. Comment this line if having compilation difficulties
-
-
+  Wire.setClock(I2C_CLOCK); // 400kHz I2C clock. 
+  // initialize device
+    //digitalWrite(LIDAR1_ENABLE, HIGH);
+  // verify connection
+  Serial.println("Initializing I2C devices...");
+  delay(100);
+  int16_t retries;
+  for (retries = 0; !lidar1.begin() && retries < RETRIES_MAX; retries++) 
+  {
+    Serial.println("VL53L0X connection unsuccessful");
+      //digitalWrite(LIDAR1_ENABLE, LOW);
+    delay(1000);
+      //digitalWrite(LIDAR1_ENABLE, HIGH);
+    Wire.begin();
     Serial.begin(BAUD_RATE);
-    // initialize device
-    Serial.println("Initializing I2C devices...");
-    accel.initialize();
 
-    // verify connection
-    Serial.println("Testing device connections...");
-
-    int16_t retries;
-    for (retries = 0; !accel.testConnection() && retries < RETRIES_MAX; retries++) 
-    {
-      Serial.println("MPU6050 connection unsuccessful");
-      delay(1000);
-      Wire.begin();
-      Serial.begin(BAUD_RATE);
       // initialize device
-      Serial.println("Initializing I2C devices...");
-      accel.initialize();
-    }
+    Serial.println("Initializing I2C devices...");
+  }
 
-    if (retries >= RETRIES_MAX)
-      exit(EXIT_FAILURE);
+    //digitalWrite(LIDAR2_ENABLE, HIGH);
+    //delay(100);
+    //lidar2.begin(0x31,false,&Wire,Adafruit_VL53L0X::VL53L0X_SENSE_DEFAULT);
 
-    //accel_zero_km_calibration();
-    accel.setXAccelOffset(-1877);
-    accel.setYAccelOffset(215);
-    accel.setZAccelOffset(1654);
-    accel.setXGyroOffset(38);
-    accel.setYGyroOffset(-44);
-    accel.setZGyroOffset(-67);
-    Serial.println("MPU6050 connection successful");
-    delay(200);
+  if (retries >= RETRIES_MAX)
+    exit(EXIT_FAILURE);
 
+
+  Serial.println("VL53L0X connection successful");
 }
 
-void read_acceleration()
+
+
+
+ISR(TIMER2_OVF_vect)
 {
-  int16_t x_raw;
-  int16_t y_raw;
-  int16_t z_raw;
-  float x_ms;
-  float y_ms;
-  float z_ms;
-  char read_out[40];
-  accel.getAcceleration(&x_raw, &y_raw, &z_raw);
-  x_ms = x_raw/G2MS;
-  y_ms = y_raw/G2MS;
-  z_ms = z_raw/G2MS;
-  sprintf(read_out, "Acceleration:\n\tX: %2.3f\n\tY: %2.3f\n\tZ: %2.3f\n", x_ms, y_ms, z_ms);
-  Serial.print(read_out);
+  measureFlag = true;
+  //static unsigned int count = 0;
+  /*if (count++ > THRESHOLD_TIME)
+  {
+    measureFlag = true;
+    count = 0;
+  }*/
 }
-
-
 
 /*
-  integrate and implement filters to get better positional data
-  Articles:
-  https://www.researchgate.net/post/How_can_I_avoid_data_drifting_when_integrating_acceleration_signal2
-  https://blog.prosig.com/2006/12/07/acceleration-velocity-displacement-spectra-%E2%80%93-omega-arithmetic/
-  https://dsp.stackexchange.com/questions/320/is-a-kalman-filter-suitable-to-filter-projected-points-positions-given-euler-an/321#321
-  https://www.researchgate.net/post/Numerical-integration-of-data-from-acceleration-to-displacement-in-time-domain-or-frequency-domain
+
+// Define which Wire objects to use, may depend on platform
+// or on your configurations.
+#define SENSOR1_WIRE Wire
+#define SENSOR2_WIRE Wire
+#if defined(WIRE_IMPLEMENT_WIRE1)
+#define SENSOR3_WIRE Wire1
+#define SENSOR4_WIRE Wire1
+#else
+#define SENSOR3_WIRE Wire
+#define SENSOR4_WIRE Wire
+#endif
+// Setup mode for doing reads
+typedef enum {
+  RUN_MODE_DEFAULT = 1,
+  RUN_MODE_ASYNC,
+  RUN_MODE_GPIO,
+  RUN_MODE_CONT
+} runmode_t;
+
+runmode_t run_mode = RUN_MODE_DEFAULT;
+uint8_t show_command_list = 1;
+
+
+
+typedef struct {
+  Adafruit_VL53L0X *psensor; // pointer to object
+  TwoWire *pwire;
+  int id;            // id for the sensor
+  int shutdown_pin;  // which pin for shutdown;
+  int interrupt_pin; // which pin to use for interrupts.
+  Adafruit_VL53L0X::VL53L0X_Sense_config_t
+      sensor_config;     // options for how to use the sensor
+  uint16_t range;        // range value used in continuous mode stuff.
+  uint8_t sensor_status; // status from last ranging in continous.
+} sensorList_t;
+
+// Actual object, could probalby include in structure above61
+Adafruit_VL53L0X sensor1;
+Adafruit_VL53L0X sensor2;
+#ifndef ARDUINO_ARCH_AVR // not enough memory on uno for 4 objects
+Adafruit_VL53L0X sensor3;
+Adafruit_VL53L0X sensor4;
+#endif
+// Setup for 4 sensors
+sensorList_t sensors[] = {
+#ifndef ARDUINO_ARCH_AVR // not enough memory on uno for 4 objects
+    {&sensor1, &SENSOR1_WIRE, 0x30, 0, 1,
+     Adafruit_VL53L0X::VL53L0X_SENSE_LONG_RANGE, 0, 0},
+    {&sensor2, &SENSOR2_WIRE, 0x31, 2, 3,
+     Adafruit_VL53L0X::VL53L0X_SENSE_HIGH_SPEED, 0, 0},
+    {&sensor3, &SENSOR3_WIRE, 0x32, 4, 5,
+     Adafruit_VL53L0X::VL53L0X_SENSE_DEFAULT, 0, 0},
+    {&sensor4, &SENSOR4_WIRE, 0x33, 6, 7,
+     Adafruit_VL53L0X::VL53L0X_SENSE_DEFAULT, 0, 0}
+#else
+    // AVR sensors move to other pins
+    {&sensor1, &SENSOR1_WIRE, 0x30, 6, 8,
+     Adafruit_VL53L0X::VL53L0X_SENSE_LONG_RANGE, 0, 0},
+    {&sensor2, &SENSOR2_WIRE, 0x31, 7, 9,
+     Adafruit_VL53L0X::VL53L0X_SENSE_HIGH_SPEED, 0, 0},
+#endif
+};
+
+const int COUNT_SENSORS = sizeof(sensors) / sizeof(sensors[0]);
+
+const uint16_t ALL_SENSORS_PENDING = ((1 << COUNT_SENSORS) - 1);
+uint16_t sensors_pending = ALL_SENSORS_PENDING;
+uint32_t sensor_last_cycle_time;
+
+
+
+
+
+void setup2()
+{
+    bool found_any_sensors = false;
+  // Set all shutdown pins low to shutdown sensors
+  for (int i = 0; i < COUNT_SENSORS; i++)
+    digitalWrite(sensors[i].shutdown_pin, LOW);
+  delay(10);
+
+  for (int i = 0; i < COUNT_SENSORS; i++) {
+    // one by one enable sensors and set their ID
+    digitalWrite(sensors[i].shutdown_pin, HIGH);
+    delay(10); // give time to wake up.
+    if (sensors[i].psensor->begin(sensors[i].id, false, sensors[i].pwire,
+                                  sensors[i].sensor_config)) {
+      found_any_sensors = true;
+    } else {
+      Serial.print(i, DEC);
+      Serial.print(F(": failed to start\n"));
+    }
+  }
+  if (!found_any_sensors) {
+    Serial.println("No valid sensors found");
+    while (1)
+      ;
+}
 
 */
-void read_acceleration_2()
-{
-  //accel.
-  
-}
+
+/*if(mydelay++ == 0)
+	{
+		Serial.print("Reading a measurement... ");
+	
+		if (measure.RangeStatus != 4) // phase failures have incorrect data
+		{  
+			Serial.print("Distance (mm): "); Serial.println(distanceAverage);
+		} 
+		else 
+		{
+			Serial.println(" out of range ");
+		}
+	}*/

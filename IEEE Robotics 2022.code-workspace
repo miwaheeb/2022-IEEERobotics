@@ -19,5 +19,9 @@
 		}
 	],
 	
-	"settings": {}
+	"settings": {
+		"files.associations": {
+			"*.old": "cpp"
+		}
+	}
 }

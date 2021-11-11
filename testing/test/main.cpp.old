@@ -1,0 +1,158 @@
+#include "main.h"
+
+//https://mjwhite8119.github.io/Robots/mpu6050
+
+MPU6050 accel;
+char read_out[40];
+
+VectorFloat newAccel;
+VectorFloat avgAccel;
+VectorFloat newVel;
+VectorFloat avgVel;
+VectorFloat pos;
+
+
+int i;
+
+double time;
+
+VectorInt16 AA;
+VectorInt16 GY;
+uint8_t *fifoBufferz;
+
+extern uint8_t fifoBuffer[64]; // FIFO storage buffer
+// extern uint8_t mpuIntStatus;   // holds actual interrupt status byte from MPU
+// extern uint8_t devStatus;      // return status after each device operation (0 = success, !0 = error)
+// extern uint16_t packetSize;    // expected DMP packet size (default is 42 bytes)
+// extern uint16_t fifoCount;     // count of all bytes currently in FIFO
+// extern uint8_t fifoBuffer[64]; // FIFO storage buffer
+
+// // orientation/motion vars
+// extern Quaternion q;           // [w, x, y, z]         quaternion container
+extern VectorInt16 aa;         // [x, y, z]            accel sensor measurements
+extern VectorInt16 gy;         // [x, y, z]            gyro sensor measurements
+extern VectorInt16 aaReal;     // [x, y, z]            gravity-free accel sensor measurements
+extern VectorInt16 aaWorld;    // [x, y, z]            world-frame accel sensor measurements
+// extern VectorFloat gravity;    // [x, y, z]            gravity vector
+// extern float euler[3];         // [psi, theta, phi]    Euler angle container
+// extern float ypr[3];           // [yaw, pitch, roll]   yaw/pitch/roll container and gravity vector
+
+
+
+void setup()  
+{ 
+
+  accel_setup();
+  dmp_setup();
+  Serial.println("pos_x,pos_y,pos_z");
+}
+ 
+void loop() 				// Turn the relay on and off in sequence
+{
+  dmp_loop();
+
+  //if (i++ == 500)
+  //{
+
+    //sprintf(read_out, "Accel Raw:\n\tX: %d\n\tY: %d\n\tZ: %d\n", aaWorld.x, aaWorld.y, aaWorld.z);
+    //Serial.print(read_out);
+
+    //sprintf(read_out, "Accel:\n\tX: %2.3f\n\tY: %2.3f\n\tZ: %2.3f\n", newAccel.x, newAccel.y, newAccel.z);
+    //Serial.print(read_out);
+
+    //sprintf(read_out, "Vel:\n\tX: %2.3f\n\tY: %2.3f\n\tZ: %2.3f\n", newVel.x, newVel.y, newVel.z);
+    //Serial.print(read_out);
+
+    //sprintf(read_out, "Pos:\n\tX: %2.3f\n\tY: %2.3f\n\tZ: %2.3f\n", pos.x, pos.y, pos.z);
+    sprintf(read_out, "%2.3f,%2.3f,%2.3f\n", newAccel.x, newAccel.y, newAccel.z);
+    Serial.print(read_out);
+    //i = 0;
+  //}
+
+}
+
+void accel_setup()
+{
+
+  // initialize serial communication
+  Serial.begin(BAUD_RATE);
+  pinMode(INTERRUPT_PIN, INPUT);
+
+
+  Wire.begin();
+  Wire.setClock(I2C_CLOCK); // 400kHz I2C clock. Comment this line if having compilation difficulties
+
+  // initialize device
+  Serial.println("Initializing I2C devices...");
+  accel.initialize();
+
+  // verify connection
+  Serial.println("Testing device connections...");
+
+  int16_t retries;
+  for (retries = 0; !accel.testConnection() && retries < RETRIES_MAX; retries++) 
+  {
+    Serial.println("MPU6050 connection unsuccessful");
+    delay(1000);
+    Wire.begin();
+    Serial.begin(BAUD_RATE);
+
+    // initialize device
+    Serial.println("Initializing I2C devices...");
+    accel.initialize();
+  }
+
+  if (retries >= RETRIES_MAX)
+    exit(EXIT_FAILURE);
+
+
+  Serial.println("MPU6050 connection successful");
+
+  delay(200);
+
+}
+
+
+void accel_calc()
+{
+
+    time += TIME_STEP;
+    newAccel.x = aaWorld.x/G2MS; // /G2MS
+    newAccel.y = aaWorld.y/G2MS;
+    newAccel.z = aaWorld.z/G2MS;
+    // avgAccel.x = (avgAccel.x + newAccel.x)/2;
+    // avgAccel.y = (avgAccel.y + newAccel.y)/2;
+    // avgAccel.z = (avgAccel.z + newAccel.z)/2;
+    // newVel.x += avgAccel.x*TIME_STEP;
+    // newVel.y += avgAccel.y*TIME_STEP;
+    // newVel.z += avgAccel.z*TIME_STEP;
+    // pos.x += avgAccel.x*.5*pow(TIME_STEP, 2) + newVel.x*TIME_STEP;
+    // pos.y += avgAccel.y*.5*pow(TIME_STEP, 2) + newVel.y*TIME_STEP;
+    // pos.z += avgAccel.z*.5*pow(TIME_STEP, 2) + newVel.z*TIME_STEP;
+
+}
+
+
+
+
+/*
+  // accel_zero_km_calibration();
+  accel.setXAccelOffset(-1877);
+  accel.setYAccelOffset(215);
+  accel.setZAccelOffset(1654);
+
+
+  accel.setXGyroOffset(38);
+  accel.setYGyroOffset(-44);
+  accel.setZGyroOffset(-67);
+
+
+
+  integrate and implement filters to get better positional data
+  Articles:
+  https://www.researchgate.net/post/How_can_I_avoid_data_drifting_when_integrating_acceleration_signal2
+  https://blog.prosig.com/2006/12/07/acceleration-velocity-displacement-spectra-%E2%80%93-omega-arithmetic/
+  https://dsp.stackexchange.com/questions/320/is-a-kalman-filter-suitable-to-filter-projected-points-positions-given-euler-an/321#321
+  https://www.researchgate.net/post/Numerical-integration-of-data-from-acceleration-to-displacement-in-time-domain-or-frequency-domain
+  https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-696.pdf Cambridge Technical Report
+*/
