@@ -6,8 +6,8 @@ Adafruit_VL53L0X lidar1 = Adafruit_VL53L0X();
 Adafruit_VL53L0X lidar2 = Adafruit_VL53L0X();
 
 
-#define LIDAR1_ENABLE 6
-#define LIDAR2_ENABLE 8
+#define LIDAR1_ENABLE 2
+#define LIDAR2_ENABLE 3
 #define SAMPLE_RATE 1 
 
 /*Time in milliseconds*/
@@ -24,10 +24,10 @@ bool measureFlag = false;
 void setup()  
 { 
   TIMSK2 = 0;
-  //pinMode(OUTPUT, LIDAR1_ENABLE);
-  //digitalWrite(LIDAR1_ENABLE, LOW);
-  //pinMode(OUTPUT, LIDAR2_ENABLE);
-  //digitalWrite(LIDAR2_ENABLE, LOW);
+  pinMode(OUTPUT, LIDAR1_ENABLE);
+  digitalWrite(LIDAR1_ENABLE, LOW);
+  pinMode(OUTPUT, LIDAR2_ENABLE);
+  digitalWrite(LIDAR2_ENABLE, LOW);
 	device_setup();
   delay(100);
   TCCR2B = 1 << CS22 | 1 << CS21 | 0 << CS20;
