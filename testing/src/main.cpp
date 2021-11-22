@@ -1,112 +1,174 @@
 #include "main.h"
-#include <stdbool.h>
-#include <avr/interrupt.h>
-
-Adafruit_VL53L0X lidar1 = Adafruit_VL53L0X();
-Adafruit_VL53L0X lidar2 = Adafruit_VL53L0X();
 
 
-#define LIDAR1_ENABLE 2
-#define LIDAR2_ENABLE 3
-#define SAMPLE_RATE 1 
+/**
+ * SENSOR ARRANGEMENT SETTINGS
+ */
+enum Clusters {North, South, East, West};
+Lidar_Sensor sensor_array[CLUSTERS][CLUSTER_SENSORS]; /* List of each sensor on each cluster */
+typedef Lidar_Sensor Cluster[CLUSTER_SENSORS]; /* Detection pattern object */
+bool object_detected[CLUSTERS][CLUSTER_SENSORS]; /* Parallel detection status array */
+typedef bool Object[CLUSTER_SENSORS]; /* Detection pattern object */
 
-/*Time in milliseconds*/
-#define THRESHOLD_TIME 5
-#define FILTER_LENGTH SAMPLE_RATE*THRESHOLD_TIME
+/* Actual algorithm
+bool isAir[CLUSTER_SENSORS] = {false, false, false};
+bool isCup[CLUSTER_SENSORS] = {true, false, true};
+bool isTree[CLUSTER_SENSORS] = {false, true, false};
+bool isNet[CLUSTER_SENSORS] = {true, true, true};
+*/
 
-void device_setup();
-const uint32_t filterLength = FILTER_LENGTH;
-uint16_t sampleIndex = 0,  sampleRate = 0, thresholdTime = 0;
-float weightedSample = 0, distanceAverage = 0;
-float sampleWindow[filterLength];
+Object air = {false, false};
+bool isAir = false;
+Object hand = {true, true};
+bool isHand = false;
+
 bool measureFlag = false;
 
 void setup()  
 { 
-  TIMSK2 = 0;
-  pinMode(OUTPUT, LIDAR1_ENABLE);
-  digitalWrite(LIDAR1_ENABLE, LOW);
-  pinMode(OUTPUT, LIDAR2_ENABLE);
-  digitalWrite(LIDAR2_ENABLE, LOW);
-	device_setup();
+
+  /* Disable polling timer */
+  TIMSK2 = 0; 
+
+	communication_setup();
   delay(100);
+
+  /* Configure sensor polling timer to 1ms */
   TCCR2B = 1 << CS22 | 1 << CS21 | 0 << CS20;
+
   Serial.println("Setup complete. Beginning\n");
   delay(500);
+  
+  /* Enable polling timer */
   TIMSK2 = 1;
 }
  
 void loop() 				
 {
 
-  while(!measureFlag){};
+  while(!measureFlag){}; /* Block until time to detect */
   measureFlag = false;
-  VL53L0X_RangingMeasurementData_t measure;
-	lidar1.rangingTest(&measure, false);
 
-	weightedSample = measure.RangeMilliMeter/filterLength;
-  //lidar2.rangingTest(&measure,false);
-	distanceAverage += weightedSample;
-	sampleIndex = (sampleIndex + 1) % filterLength;
-	distanceAverage -= sampleWindow[sampleIndex];
-	sampleWindow[sampleIndex] = weightedSample;
+  void detect_objects();
 
-	if(distanceAverage > 50 && distanceAverage < 80 && measure.RangeMilliMeter > 50 && measure.RangeMilliMeter < 80)
-		Serial.println("\tTRIGGERED\n");
+  /* TODO: Confirm there isn't a better way to do this */
+  /* If a cluster pattern is recognized, do X */
+  if(isHand)
+  {
+    for(size_t i = 0; i < CLUSTERS; i++)
+    {
+      if(hand && *object_detected[i])
+      {
+        Serial.println("\tWOWOWOWOWOWOW");
+        Serial.print("\tDetected on cluster ");
+        Serial.print(i);
+        Serial.println("\n");
+      }
+    }
+  }
 }
 
 
-void device_setup()
+/**
+ * @brief Uses an averaging filter with 1ms samples to poll a cluster for a reading
+ * Sensor detection patterns indicate if an object is detected and what it is
+ */
+void detect_objects()
 {
-	
-  // initialize serial communication
+  VL53L0X_RangingMeasurementData_t measure;
+
+  /* Calculate the running average distance for each sensor to check for objects */
+  for(size_t i = 0; i < CLUSTERS; i++)
+  {
+    for(size_t j = 0; j < CLUSTER_SENSORS; j++)
+    {
+        Lidar_Sensor sensor = sensor_array[i][j];
+  
+        /* Add the new sample to the average */
+	      sensor.VL53L0X.rangingTest(&measure, false);
+        sensor.weightedSample = measure.RangeMilliMeter/FILTER_LENGTH;
+        sensor.distanceAverage += sensor.weightedSample;
+
+        /* Remove the oldest sample */
+        sensor.sampleIndex = (sensor.sampleIndex + 1) % FILTER_LENGTH;
+        sensor.distanceAverage -= sensor.sampleWindow[sensor.sampleIndex];
+
+        /* Store the new sample for later */
+        sensor.sampleWindow[sensor.sampleIndex] = sensor.weightedSample;
+
+        /* If it is detected within the distance parameter, catalog as true*/
+        object_detected[i][j] = sensor.distanceAverage > MIN_DISTANCE && sensor.distanceAverage < MAX_DISTANCE;
+    }
+
+    /* Check each cluster pattern for a known object*/
+    /* TODO: QUESTIONABLE IMPLEMENTATION */
+    Object *object = &object_detected[i];
+    isAir = air && *object;
+    isHand = hand && *object;
+      
+  }
+}
+
+/* Enable all comms */
+void communication_setup()
+{
+  /* Initialize debug serial */
   Serial.begin(BAUD_RATE);
   pinMode(INTERRUPT_PIN, INPUT);
 
+  /* Initialize I2C */
   Wire.begin();
-  Wire.setClock(I2C_CLOCK); // 400kHz I2C clock. 
-  // initialize device
-    //digitalWrite(LIDAR1_ENABLE, HIGH);
-  // verify connection
-  Serial.println("Initializing I2C devices...");
-  delay(100);
-  int16_t retries;
-  for (retries = 0; !lidar1.begin() && retries < RETRIES_MAX; retries++) 
-  {
-    Serial.println("VL53L0X connection unsuccessful");
-      //digitalWrite(LIDAR1_ENABLE, LOW);
-    delay(1000);
-      //digitalWrite(LIDAR1_ENABLE, HIGH);
-    Wire.begin();
-    Serial.begin(BAUD_RATE);
+  Wire.setClock(I2C_CLOCK);
 
-      // initialize device
-    Serial.println("Initializing I2C devices...");
+  Serial.println("Initializing I2C devices...");
+ 
+  for(size_t i = 0; i < CLUSTERS; i++)
+  {
+    for(size_t j = 0; j < CLUSTER_SENSORS; j++)
+    { 
+      sensor_setup(sensor_array[i][j]);
+    }
   }
 
-    //digitalWrite(LIDAR2_ENABLE, HIGH);
-    //delay(100);
-    //lidar2.begin(0x31,false,&Wire,Adafruit_VL53L0X::VL53L0X_SENSE_DEFAULT);
-
-  if (retries >= RETRIES_MAX)
-    exit(EXIT_FAILURE);
-
-
-  Serial.println("VL53L0X connection successful");
 }
 
+/* Setup each sensor*/
+void sensor_setup(Lidar_Sensor sensor)
+{
+  int16_t retries;
+  digitalWrite(sensor.enable, HIGH);
+  delay(100);
+  for (retries = 0; !sensor.VL53L0X.begin(sensor.address,false,&Wire,Adafruit_VL53L0X::VL53L0X_SENSE_DEFAULT) 
+  && retries < RETRIES_MAX; retries++) 
+  {
+    Serial.print("Sensor on pin ");
+    Serial.print(sensor.enable);
+    Serial.println("was unsuccessful.");
+    digitalWrite(sensor.enable, LOW);
+    delay((retries) * 100); /* Add a little delay while we power cycle */
+    digitalWrite(sensor.enable, HIGH);
 
+    Serial.println("Retrying device...");
+  }
+    
+  if (retries >= RETRIES_MAX)
+  {
+     Serial.println("\tCritical failure");
+     delay(1000);
+    
+     exit(EXIT_FAILURE);
+  }
+
+  Serial.print("Sensor on pin ");
+  Serial.print(sensor.enable);
+  Serial.println("was successful.");
+  
+}
 
 
 ISR(TIMER2_OVF_vect)
 {
   measureFlag = true;
-  //static unsigned int count = 0;
-  /*if (count++ > THRESHOLD_TIME)
-  {
-    measureFlag = true;
-    count = 0;
-  }*/
 }
 
 /*
