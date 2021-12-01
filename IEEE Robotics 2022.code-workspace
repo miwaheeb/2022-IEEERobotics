@@ -20,6 +20,14 @@
 		{
 			"name": "Line Follow Sensor",
 			"path": "Line Follow Sensor"
+		},
+		{
+			"name": "VexcontrollTestCode",
+			"path": "VexcontrollTestCode"
+		},
+		{
+			"name": "stepperMotor testCode",
+			"path": "stepperMotor testCode"
 		}
 	],
 	
