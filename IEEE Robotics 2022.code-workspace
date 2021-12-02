@@ -28,6 +28,10 @@
 		{
 			"name": "stepperMotor testCode",
 			"path": "stepperMotor testCode"
+		},
+		{
+			"name": "gettingGood",
+			"path": "gettingGood"
 		}
 	],
 	
