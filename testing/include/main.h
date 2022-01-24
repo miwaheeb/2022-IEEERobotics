@@ -1,4 +1,5 @@
 #include <Adafruit_VL53L0X.h>
+#include <VL53L0X.h>
 #include <Wire.h>
 #include <stdbool.h>
 #include <avr/interrupt.h>
@@ -16,7 +17,7 @@
 
 /* Group settings */
 #define CLUSTERS 1
-#define CLUSTER_SENSORS 1
+#define CLUSTER_SENSORS 3
 
 
 /******************
@@ -25,9 +26,9 @@
 #define RETRIES_MAX 5
 #define INTERRUPT_PIN 2  // use pin 2 on Arduino Uno & most boards
 #define BAUD_RATE 9600
-#define I2C_CLOCK 100000
+#define I2C_CLOCK 400000
 
-typedef size_t Pin;
+typedef uint8_t Pin;
 
 class Lidar_Sensor
 {

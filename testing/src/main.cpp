@@ -1,8 +1,7 @@
 #include "main.h"
-#include "avr8-stub.h"
-#include "app_api.h" // only needed with flash breakpoints
+//#include "avr8-stub.h"
+//#include "app_api.h" // only needed with flash breakpoints
 
-/*TODO https://www.techonthenet.com/c_language/standard_library_functions/string_h/memcmp.php*/
 /* https://www.st.com/resource/en/application_note/dm00280486-using-multiple-vl53l0x-in-a-single-design-stmicroelectronics.pdf */
 /* https://www.analog.com/media/en/technical-documentation/product-selector-card/i2cb.pdf */
 /* https://www.st.com/resource/en/datasheet/vl53l0x.pdf */
@@ -10,6 +9,8 @@
 #define CUP_ALERT_PIN 76
 #define TREE_ALERT_PIN 77
 #define NET_ALERT_PIN 78
+
+#define debug_message Serial.print
 
 /**
  * SENSOR ARRANGEMENT SETTINGS
@@ -21,34 +22,35 @@ typedef bool Object[CLUSTER_SENSORS]; /* Detection pattern object */
 
 /* Digital pins 0-19*/
 Pin sensor_enable_pins[20] = {2,3,6,7,1,5,15,16,17,18,23,24,25,26,64,63,13,12,46,19};
+
 /* Digital pin 22, 23, 24 */
 Pin detection_alert_pins[3] = {CUP_ALERT_PIN, TREE_ALERT_PIN, NET_ALERT_PIN};
 
 /* Object detection patterns */
-// Object Air = {false, false, false};
-// Object Cup = {true, false, true};
-// Object Tree = {false, true, false};
-// Object Net = {true, true, true};
-Object Air = {false};
-Object Cup = {true};
+Object Air = {false, false, false};
+Object Cup = {true, false, true};
+Object Tree = {false, true, false};
+Object Net = {true, true, true};
 
 
 bool measureFlag = false;
 
+char msg[200];
+
 void setup()  
 { 
-  debug_init();
+  //debug_init();
+  Serial.begin(115200);
   /* Disable polling timer */
   TIMSK2 = 0; 
 
-  delay(100);
 	communication_setup();
   
-
   /* Configure sensor polling timer to 1ms */
   TCCR2B = 1 << CS22 | 0 << CS21 | 0 << CS20;
 
-  Serial.println("Setup complete. Beginning\n");
+  sprintf(msg,"Setup complete. \nBeginning\n\n");
+  debug_message(msg);
   delay(500);
   
   /* Enable polling timer */
@@ -58,50 +60,42 @@ void setup()
 
 }
 
-int debug_timer = 0;
-int stuck_timer = 0; 
 void loop() 				
 {
 
-  //if(debug_timer++ == 999)
-  //{
-    //Serial.println("Alive.");
-    //debug_timer = 0;
-  //}
-  
+ 
   while(!measureFlag){;} /* Block until time to detect */
-  stuck_timer = 0;
+  
   measureFlag = false;
 
-  void detect_objects();
-  //Serial.println("Objects detected.");
+  detect_objects();
+  
   /* If a cluster pattern is recognized, do X */
   for(size_t i = 0; i < CLUSTERS; i++)
   {
     bool isAir = !((bool)memcmp(&Air, &object_detected[i], sizeof(bool)*CLUSTER_SENSORS));
     bool isCup = !((bool)memcmp(&Cup, &object_detected[i], sizeof(bool)*CLUSTER_SENSORS));
-    //bool isTree = !((bool*)memcmp(Tree, &object_detected[i], sizeof(bool)*3));
-    //bool isNet = !((bool*)memcmp(Net, &object_detected[i], sizeof(bool)*3));
+    bool isTree = !((bool*)memcmp(Tree, &object_detected[i], sizeof(bool)*CLUSTER_SENSORS));
+    bool isNet = !((bool*)memcmp(Net, &object_detected[i], sizeof(bool)*CLUSTER_SENSORS));
 
     if(isCup)
     {
-      Serial.println("\tWOWOWOWOWOWOW");
-      Serial.print("\tDetected on cluster ");
-      Serial.print(i);
-      Serial.println("\n");
+      sprintf(msg, "\tDetected on cluster %d\n", i);
+      debug_message(msg);
+      
       digitalWrite(CUP_ALERT_PIN, HIGH);
     }
-    // if(isTree)
-    // {
-    //   digitalWrite(TREE_ALERT_PIN, HIGH);
-    // }
-    // if(isNet)
-    // {
-    //   digitalWrite(NET_ALERT_PIN, HIGH);
-    // }
+    if(isTree)
+    {
+      digitalWrite(TREE_ALERT_PIN, HIGH);
+    }
+    if(isNet)
+    {
+      digitalWrite(NET_ALERT_PIN, HIGH);
+    }
 
   }
-  //Serial.println("Closing.");
+  
 }
 
 
@@ -112,8 +106,6 @@ void loop()
 void detect_objects()
 {
   VL53L0X_RangingMeasurementData_t measure;
-
-  Serial.println("Here.");
 
   /* Calculate the running average distance for each sensor to check for objects */
   for(size_t i = 0; i < CLUSTERS; i++)
@@ -137,24 +129,20 @@ void detect_objects()
       /* If it is detected within the distance parameter, catalog as true*/
       object_detected[i][j] = sensor->distanceAverage > MIN_DISTANCE && sensor->distanceAverage < MAX_DISTANCE;
 
-      if(stuck_timer == 1000)
-      {
-        Serial.print("RangeMilliMeter: ");
-        Serial.println(measure.RangeMilliMeter);
+      
+      // sprintf(msg, "RangeMilliMeter: %d\n", measure.RangeMilliMeter);
+      // debug_message(msg);
+      
+      // sprintf(msg, "Weighted Sample: %d\n", sensor->weightedSample);
+      // debug_message(msg);
+      
+      // sprintf(msg, "Sample Index: %d\n", sensor->sampleIndex);
+      // debug_message(msg);
+      
+      // sprintf(msg, "Average distance: %d\n", sensor->distanceAverage);
+      // debug_message(msg);
 
-        Serial.print("Weighted Sample: ");
-        Serial.println(sensor->weightedSample);
-
-        Serial.print("Sample Index: ");
-        Serial.println(sensor->sampleIndex);
-
-        Serial.print("Average distance: ");
-        Serial.println(sensor->distanceAverage);
-
-
-        stuck_timer = 0;
-      }
-      stuck_timer = stuck_timer+1;
+       
     }
   }
 }
@@ -163,18 +151,17 @@ void detect_objects()
 void communication_setup()
 {
   /* Initialize debug serial */
-  Serial.begin(BAUD_RATE);
-  pinMode(INTERRUPT_PIN, INPUT);
+  
 
   /* Initialize I2C */
   Wire.begin();
   Wire.setClock(I2C_CLOCK);
 
-  Serial.println("Initializing I2C devices...");
+  debug_message("Initializing I2C devices...\n");
   size_t k = 0;
   size_t address = VL53L0X_I2C_ADDR + 1;
 
-  Serial.println("Disabling sensors...");
+  debug_message("Resetting sensors...\n");
   for(size_t i = 0; i < CLUSTERS; i++)
   {
     for(size_t j = 0; j < CLUSTER_SENSORS; j++)
@@ -184,13 +171,33 @@ void communication_setup()
     }
   }
 
-  delay(500);
+  delay(10);
+
   for(size_t i = 0; i < CLUSTERS; i++)
   {
     for(size_t j = 0; j < CLUSTER_SENSORS; j++)
     { 
-      Serial.print("Initializing sensor on pin ");
-      Serial.println(sensor_array[i][j].enable);
+      digitalWrite(sensor_array[i][j].enable,HIGH);
+    }
+  }
+
+  debug_message("Sensors reset.\n\n");
+  for(size_t i = 0; i < CLUSTERS; i++)
+  {
+    for(size_t j = 0; j < CLUSTER_SENSORS; j++)
+    { 
+      if(i != 0 || j != 0)
+        digitalWrite(sensor_array[i][j].enable,LOW);
+    }
+  }
+
+
+  for(size_t i = 0; i < CLUSTERS; i++)
+  {
+    for(size_t j = 0; j < CLUSTER_SENSORS; j++)
+    { 
+      sprintf(msg,"Initializing sensor on pin %d\n\n", sensor_array[i][j].enable);
+      debug_message(msg);
       sensor_setup(&sensor_array[i][j]);
     }
   }
@@ -202,30 +209,29 @@ void sensor_setup(Lidar_Sensor *sensor)
   int16_t retries;
   digitalWrite(sensor->enable, HIGH);
   delay(100);
-  for (retries = 1; !sensor->VL53L0X.begin(sensor->address,true,&Wire,Adafruit_VL53L0X::VL53L0X_SENSE_DEFAULT) 
+  for (retries = 1; !sensor->VL53L0X.begin(sensor->address,false,&Wire,Adafruit_VL53L0X::VL53L0X_SENSE_DEFAULT) 
   && retries < RETRIES_MAX; retries++) 
   {
-    Serial.print("Sensor on pin ");
-    Serial.print(sensor->enable);
-    Serial.println(" was unsuccessful.");
+    sprintf(msg,"Sensor on pin %d did not initialize.\n", sensor->enable);
+    debug_message(msg);
     digitalWrite(sensor->enable, LOW);
     delay((retries) * 100); /* Add a little delay while we power cycle */
     digitalWrite(sensor->enable, HIGH);
     delay((retries) * 100); /* Add a little delay while we power cycle */
-    Serial.println("Retrying device...");
+    debug_message("Retrying device...\n\n");
   }
     
   if (retries >= RETRIES_MAX)
   {
-     Serial.println("\tCritical failure");
-     delay(1000);
-    
-     exit(EXIT_FAILURE);
+    debug_message("Critical failure!\n"); 
+    delay(1000);
+     
+    exit(EXIT_FAILURE);
   }
 
-  Serial.print("Sensor on pin ");
-  Serial.print(sensor->enable);
-  Serial.println(" was successful.");
+  
+  sprintf(msg,"Sensor on pin %d initialized.\n", sensor->enable);
+  debug_message(msg);
   
 }
 
