@@ -1,5 +1,5 @@
 #include <Adafruit_VL53L0X.h>
-#include <VL53L0X.h>
+//#include <VL53L0X.h>
 #include <Wire.h>
 #include <stdbool.h>
 #include <avr/interrupt.h>
@@ -16,6 +16,7 @@
 #define MAX_DISTANCE 80 /* in millimeters */
 
 /* Group settings */
+#define VL53L0X_I2C_ADDR 41
 #define CLUSTERS 1
 #define CLUSTER_SENSORS 3
 
@@ -25,8 +26,8 @@
  ******************/
 #define RETRIES_MAX 5
 #define INTERRUPT_PIN 2  // use pin 2 on Arduino Uno & most boards
-#define BAUD_RATE 9600
-#define I2C_CLOCK 400000
+#define BAUD_RATE 115200
+#define I2C_CLOCK 100000
 
 typedef uint8_t Pin;
 
@@ -34,6 +35,7 @@ class Lidar_Sensor
 {
   public:
     Adafruit_VL53L0X VL53L0X;
+    //VL53L0X Pololu;
 	  uint8_t address = 0;
     Pin enable = 0;
     uint16_t sampleIndex = 0,  thresholdTime = 0;
@@ -45,8 +47,6 @@ class Lidar_Sensor
     {
 		  address = i2c_address;
 		  enable = enable_pin;
-    	pinMode(enable, OUTPUT);
-    	digitalWrite(enable, LOW);
     }
 
 };

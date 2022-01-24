@@ -60,8 +60,40 @@ void setup()
 
 }
 
+bool address_found = false;
 void loop() 				
 {
+
+  if(!address_found)
+  {
+    Serial.println ("I2C scanner. Scanning ...");
+    byte count = 0;
+
+
+    for (byte i = 1; i < 120; i++)
+    {
+      Wire.beginTransmission (i);
+
+      if (Wire.endTransmission () == 0)
+      {
+        Serial.print ("Found address: ");
+        Serial.print (i, DEC);
+        Serial.print (" (0x");
+        Serial.print (i, HEX);
+        Serial.println (")");
+        count++;
+        delay (1);  // maybe unneeded?
+      } // end of good response
+    } // end of for loop
+
+    Serial.println ("Done.");
+    Serial.print ("Found ");
+    Serial.print (count, DEC);
+    Serial.println (" device(s).");
+
+    delay(3000);
+    address_found = true;
+  }
 
  
   while(!measureFlag){;} /* Block until time to detect */
@@ -80,17 +112,21 @@ void loop()
 
     if(isCup)
     {
-      sprintf(msg, "\tDetected on cluster %d\n", i);
+      sprintf(msg, "\tDetected cup on cluster %d\n", i);
       debug_message(msg);
       
       digitalWrite(CUP_ALERT_PIN, HIGH);
     }
     if(isTree)
     {
+      sprintf(msg, "\tDetected tree on cluster %d\n", i);
+      debug_message(msg);
       digitalWrite(TREE_ALERT_PIN, HIGH);
     }
     if(isNet)
     {
+      sprintf(msg, "\tDetected net on cluster %d\n", i);
+      debug_message(msg);
       digitalWrite(NET_ALERT_PIN, HIGH);
     }
 
@@ -106,7 +142,6 @@ void loop()
 void detect_objects()
 {
   VL53L0X_RangingMeasurementData_t measure;
-
   /* Calculate the running average distance for each sensor to check for objects */
   for(size_t i = 0; i < CLUSTERS; i++)
   {
@@ -117,6 +152,8 @@ void detect_objects()
       /* Add the new sample to the average */
       sensor->VL53L0X.rangingTest(&measure, false);
       sensor->weightedSample = measure.RangeMilliMeter/FILTER_LENGTH;
+      sprintf(msg, "Measurement taken at: %d on address %d\n",measure.RangeMilliMeter, sensor->address);
+      debug_message(msg);
       sensor->distanceAverage += sensor->weightedSample;
 
       /* Remove the oldest sample */
@@ -150,16 +187,13 @@ void detect_objects()
 /* Enable all comms */
 void communication_setup()
 {
-  /* Initialize debug serial */
-  
-
   /* Initialize I2C */
   Wire.begin();
   Wire.setClock(I2C_CLOCK);
 
   debug_message("Initializing I2C devices...\n");
   size_t k = 0;
-  size_t address = VL53L0X_I2C_ADDR + 1;
+  size_t address = VL53L0X_I2C_ADDR;
 
   debug_message("Resetting sensors...\n");
   for(size_t i = 0; i < CLUSTERS; i++)
@@ -167,6 +201,8 @@ void communication_setup()
     for(size_t j = 0; j < CLUSTER_SENSORS; j++)
     { 
       address += 2;
+      pinMode(sensor_enable_pins[k], OUTPUT);
+    	digitalWrite(sensor_enable_pins[k], LOW);
       sensor_array[i][j].init(sensor_enable_pins[k++], address);
     }
   }
@@ -177,7 +213,7 @@ void communication_setup()
   {
     for(size_t j = 0; j < CLUSTER_SENSORS; j++)
     { 
-      digitalWrite(sensor_array[i][j].enable,HIGH);
+      pinMode(sensor_array[i][j].enable, INPUT);
     }
   }
 
@@ -186,11 +222,15 @@ void communication_setup()
   {
     for(size_t j = 0; j < CLUSTER_SENSORS; j++)
     { 
+      
       if(i != 0 || j != 0)
+      {
+        pinMode(sensor_array[i][j].enable, OUTPUT);
         digitalWrite(sensor_array[i][j].enable,LOW);
+      }
+        
     }
   }
-
 
   for(size_t i = 0; i < CLUSTERS; i++)
   {
@@ -207,9 +247,9 @@ void communication_setup()
 void sensor_setup(Lidar_Sensor *sensor)
 {
   int16_t retries;
-  digitalWrite(sensor->enable, HIGH);
-  delay(100);
-  for (retries = 1; !sensor->VL53L0X.begin(sensor->address,false,&Wire,Adafruit_VL53L0X::VL53L0X_SENSE_DEFAULT) 
+  pinMode(sensor->enable, INPUT);
+  delay(500);
+  for (retries = 1; !sensor->VL53L0X.begin(sensor->address,false,&Wire,Adafruit_VL53L0X::VL53L0X_SENSE_DEFAULT)
   && retries < RETRIES_MAX; retries++) 
   {
     sprintf(msg,"Sensor on pin %d did not initialize.\n", sensor->enable);
@@ -229,8 +269,17 @@ void sensor_setup(Lidar_Sensor *sensor)
     exit(EXIT_FAILURE);
   }
 
+  if(sensor->VL53L0X.setAddress((uint8_t)sensor->address))
+    debug_message("Success\n");
+  // uint8_t address = sensor->Pololu.getAddress();
+  // if(address != sensor->address)
+  //   sprintf(msg, "Failed to set address at %d was instead %d", sensor->address, address);
+  // else
+  //   sprintf(msg, "Set address to %d\n", address);
+
+  // debug_message(msg);  
   
-  sprintf(msg,"Sensor on pin %d initialized.\n", sensor->enable);
+  sprintf(msg,"Sensor on pin %d initialized.\n\n", sensor->enable);
   debug_message(msg);
   
 }
