@@ -1,19 +1,34 @@
+/*****************************************************************************************************************
+ *         File: stepperMain_1.0.c 
+ *       Author: Mina Waheeb
+ *      Created: 11/11/2021
+ *  Last Update: 1/31/2022
+ *        Board: arduino uno
+ * Control Part: Stepper motor arm
+ * 
+ * v1.0: equal part of unwinding and rewinding
+ * 
+ * #########################################################################################################
+ * |                                         In depth explanation                                          |
+ * #########################################################################################################
+ * 
+ *****************************************************************************************************************/
 #include <Arduino.h>
 
+// Defining stepper pins
 int smDirectionPin = 3; //Direction pin
 int smStepPin = 2; //Stepper pin
-
 int enable = 6; //enable
  
 void setup(){
-  /*Sets all pin to output; the microcontroller will send them(the pins) bits, it will not expect to receive any bits from thiese pins.*/
+  /* defining all pin as output */
   pinMode(smDirectionPin, OUTPUT);
   pinMode(smStepPin, OUTPUT);
   pinMode(enable, OUTPUT);
   
+  // initial state of enable pin low
   digitalWrite(enable, LOW);
 
- 
   Serial.begin(9600);
 }
  
