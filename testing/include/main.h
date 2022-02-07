@@ -16,7 +16,7 @@
 #define MAX_DISTANCE 80 /* in millimeters */
 
 /* Group settings */
-#define VL53L0X_I2C_ADDR 41
+#define VL53L0X_I2C_ADDRESS 41
 #define CLUSTERS 1
 #define CLUSTER_SENSORS 3
 

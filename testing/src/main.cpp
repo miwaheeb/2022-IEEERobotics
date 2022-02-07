@@ -6,6 +6,7 @@
 /* https://www.analog.com/media/en/technical-documentation/product-selector-card/i2cb.pdf */
 /* https://www.st.com/resource/en/datasheet/vl53l0x.pdf */
 
+#define TCAADDR 0x72
 #define CUP_ALERT_PIN 76
 #define TREE_ALERT_PIN 77
 #define NET_ALERT_PIN 78
@@ -21,7 +22,7 @@ bool object_detected[CLUSTERS][CLUSTER_SENSORS]; /* Parallel detection status ar
 typedef bool Object[CLUSTER_SENSORS]; /* Detection pattern object */
 
 /* Digital pins 0-19*/
-Pin sensor_enable_pins[20] = {2,3,6,7,1,5,15,16,17,18,23,24,25,26,64,63,13,12,46,19};
+Pin sensor_enable_pins[20] = {3,6,2,7,1,5,15,16,17,18,23,24,25,26,64,63,13,12,46,19};
 
 /* Digital pin 22, 23, 24 */
 Pin detection_alert_pins[3] = {CUP_ALERT_PIN, TREE_ALERT_PIN, NET_ALERT_PIN};
@@ -40,6 +41,7 @@ char msg[200];
 void setup()  
 { 
   //debug_init();
+
   Serial.begin(115200);
   /* Disable polling timer */
   TIMSK2 = 0; 
@@ -64,6 +66,12 @@ bool address_found = false;
 void loop() 				
 {
 
+  for(int i = 0; i < 8; i++)
+  {
+    Wire.beginTransmission(TCAADDR);
+    Wire.write(1<<i);
+    Wire.endTransmission(true);
+  
   if(!address_found)
   {
     Serial.println ("I2C scanner. Scanning ...");
@@ -94,7 +102,7 @@ void loop()
     delay(3000);
     address_found = true;
   }
-
+  }
  
   while(!measureFlag){;} /* Block until time to detect */
   
@@ -110,6 +118,10 @@ void loop()
     bool isTree = !((bool*)memcmp(Tree, &object_detected[i], sizeof(bool)*CLUSTER_SENSORS));
     bool isNet = !((bool*)memcmp(Net, &object_detected[i], sizeof(bool)*CLUSTER_SENSORS));
 
+    if(isAir)
+    {
+
+    }
     if(isCup)
     {
       sprintf(msg, "\tDetected cup on cluster %d\n", i);
@@ -148,7 +160,9 @@ void detect_objects()
     for(size_t j = 0; j < CLUSTER_SENSORS; j++)
     {
       Lidar_Sensor *sensor = &sensor_array[i][j];
-
+      Wire.beginTransmission(TCAADDR);
+      Wire.write(1 << sensor->address);
+      Wire.endTransmission(true);
       /* Add the new sample to the average */
       sensor->VL53L0X.rangingTest(&measure, false);
       sensor->weightedSample = measure.RangeMilliMeter/FILTER_LENGTH;
@@ -190,48 +204,24 @@ void communication_setup()
   /* Initialize I2C */
   Wire.begin();
   Wire.setClock(I2C_CLOCK);
-
+  
   debug_message("Initializing I2C devices...\n");
   size_t k = 0;
-  size_t address = VL53L0X_I2C_ADDR;
+  size_t address = 0;
 
+  /* All sensors disabled */
   debug_message("Resetting sensors...\n");
   for(size_t i = 0; i < CLUSTERS; i++)
   {
     for(size_t j = 0; j < CLUSTER_SENSORS; j++)
     { 
-      address += 2;
       pinMode(sensor_enable_pins[k], OUTPUT);
-    	digitalWrite(sensor_enable_pins[k], LOW);
-      sensor_array[i][j].init(sensor_enable_pins[k++], address);
+    	digitalWrite(sensor_enable_pins[k], HIGH);
+      sensor_array[i][j].init(sensor_enable_pins[k++], address++);
     }
   }
 
-  delay(10);
-
-  for(size_t i = 0; i < CLUSTERS; i++)
-  {
-    for(size_t j = 0; j < CLUSTER_SENSORS; j++)
-    { 
-      pinMode(sensor_array[i][j].enable, INPUT);
-    }
-  }
-
-  debug_message("Sensors reset.\n\n");
-  for(size_t i = 0; i < CLUSTERS; i++)
-  {
-    for(size_t j = 0; j < CLUSTER_SENSORS; j++)
-    { 
-      
-      if(i != 0 || j != 0)
-      {
-        pinMode(sensor_array[i][j].enable, OUTPUT);
-        digitalWrite(sensor_array[i][j].enable,LOW);
-      }
-        
-    }
-  }
-
+   /* Initialize each sensor */
   for(size_t i = 0; i < CLUSTERS; i++)
   {
     for(size_t j = 0; j < CLUSTER_SENSORS; j++)
@@ -247,10 +237,13 @@ void communication_setup()
 void sensor_setup(Lidar_Sensor *sensor)
 {
   int16_t retries;
-  pinMode(sensor->enable, INPUT);
+  //pinMode(sensor->enable, INPUT);
+  Wire.beginTransmission(TCAADDR);
+  Wire.write(1 << sensor->address);
+  Wire.endTransmission(true);
+  
   delay(500);
-  for (retries = 1; !sensor->VL53L0X.begin(sensor->address,false,&Wire,Adafruit_VL53L0X::VL53L0X_SENSE_DEFAULT)
-  && retries < RETRIES_MAX; retries++) 
+  for (retries = 1; !sensor->VL53L0X.begin() && retries < RETRIES_MAX; retries++) 
   {
     sprintf(msg,"Sensor on pin %d did not initialize.\n", sensor->enable);
     debug_message(msg);
@@ -269,16 +262,7 @@ void sensor_setup(Lidar_Sensor *sensor)
     exit(EXIT_FAILURE);
   }
 
-  if(sensor->VL53L0X.setAddress((uint8_t)sensor->address))
-    debug_message("Success\n");
-  // uint8_t address = sensor->Pololu.getAddress();
-  // if(address != sensor->address)
-  //   sprintf(msg, "Failed to set address at %d was instead %d", sensor->address, address);
-  // else
-  //   sprintf(msg, "Set address to %d\n", address);
 
-  // debug_message(msg);  
-  
   sprintf(msg,"Sensor on pin %d initialized.\n\n", sensor->enable);
   debug_message(msg);
   
