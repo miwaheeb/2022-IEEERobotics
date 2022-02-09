@@ -27,12 +27,6 @@ Object Cup = {true, false, true};
 Object Tree = {false, true, false};
 Object Net = {true, true, true};
 
-// Object Air = {false};
-// Object Cup = {true };
-// Object Tree = {false};
-// Object Net = {true };
-
-
 volatile int measureFlag = 0;
 bool address_found = false;
 
@@ -105,10 +99,10 @@ void loop()
   /* If a cluster pattern is recognized, do X */
   for(size_t i = 0; i < CLUSTERS; i++)
   {
-    bool isAir = !((bool)memcmp(&Air, &object_detected[i], sizeof(bool)*CLUSTER_SENSORS));
-    bool isCup = !((bool)memcmp(&Cup, &object_detected[i], sizeof(bool)*CLUSTER_SENSORS));
-    bool isTree = !((bool)memcmp(Tree, &object_detected[i], sizeof(bool)*CLUSTER_SENSORS));
-    bool isNet = !((bool)memcmp(Net, &object_detected[i], sizeof(bool)*CLUSTER_SENSORS));
+    bool isAir  = !((bool)memcmp(Air, &object_detected[i], sizeof(bool)*CLUSTER_SENSORS));
+    bool isCup  = !((bool)memcmp(Cup, &object_detected[i], sizeof(bool)*CLUSTER_SENSORS));
+    bool isTree = !((bool)memcmp(Tree,&object_detected[i], sizeof(bool)*CLUSTER_SENSORS));
+    bool isNet  = !((bool)memcmp(Net, &object_detected[i], sizeof(bool)*CLUSTER_SENSORS));
 
     if(isAir)
     {
@@ -173,7 +167,7 @@ void detect_objects()
 
       sprintf(msg, "Average distance %dmm on address %d\n", measure.RangeMilliMeter, sensor->address);
       debug_message(msg);
-      
+
       /* Store the new sample for later */
       sensor->sampleWindow[sensor->sampleIndex] = sensor->weightedSample;
 
