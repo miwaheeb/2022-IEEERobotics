@@ -10,8 +10,9 @@
  ******************/
 
 /* Trigger Settings */
-#define THRESHOLD_TIME 5 /* in milliseconds */
-#define FILTER_LENGTH THRESHOLD_TIME
+#define MEASURE_TIME 50
+#define THRESHOLD_TIME 5*MEASURE_TIME /* in milliseconds */
+#define FILTER_LENGTH THRESHOLD_TIME/MEASURE_TIME
 #define MIN_DISTANCE 50 /* in millimeters */
 #define MAX_DISTANCE 80 /* in millimeters */
 
@@ -35,7 +36,6 @@ class Lidar_Sensor
 {
   public:
     Adafruit_VL53L0X VL53L0X;
-    //VL53L0X Pololu;
 	  uint8_t address = 0;
     Pin enable = 0;
     uint16_t sampleIndex = 0,  thresholdTime = 0;
