@@ -30,7 +30,7 @@ void stepperRetract();
 /**************************************************************/
 // control extention/retraction distance in inches below
 int extend  = 0; // inches
-int retract = 0; // inches
+int retract = 2; // inches
 /**************************************************************/
 /**************************************************************/
 
