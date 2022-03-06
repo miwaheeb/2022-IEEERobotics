@@ -36,6 +36,14 @@
 		{
 			"name": "survo_robotArm",
 			"path": "survo_robotArm"
+		},
+		{
+			"name": "Solenoid",
+			"path": "Solenoid"
+		},
+		{
+			"name": "Arm",
+			"path": "Arm"
 		}
 	],
 	

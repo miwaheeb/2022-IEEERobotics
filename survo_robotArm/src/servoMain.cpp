@@ -83,4 +83,7 @@ void servo_test_sweep()
     myservo.write(angle);
     delay(25);
   }
+
+  // set sweep_check back to 0 to end test
+  sweep_check = 0;
 }
