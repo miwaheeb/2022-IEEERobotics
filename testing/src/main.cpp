@@ -4,6 +4,8 @@
 #define CUP_ALERT_PIN 76
 #define TREE_ALERT_PIN 77
 #define NET_ALERT_PIN 78
+#define NOP __asm__ __volatile__ ("nop\n\t")
+/* attachInterrupt(digitalPinToInterrupt(pin), ISR, mode) ISR as function, mode:LOW CHANGE RISING FALLING... using rising */
 
 #define debug_message Serial.print
 
@@ -114,18 +116,27 @@ void loop()
       debug_message(msg);
       
       digitalWrite(CUP_ALERT_PIN, HIGH);
+      NOP;
+      NOP;
+      digitalWrite(CUP_ALERT_PIN, LOW);
     }
     if(isTree)
     {
       sprintf(msg, "\tDetected tree on cluster %d\n", i);
       debug_message(msg);
       digitalWrite(TREE_ALERT_PIN, HIGH);
+      NOP;
+      NOP;
+      digitalWrite(TREE_ALERT_PIN, LOW);
     }
     if(isNet)
     {
       sprintf(msg, "\tDetected net on cluster %d\n", i);
       debug_message(msg);
       digitalWrite(NET_ALERT_PIN, HIGH);
+      NOP;
+      NOP;
+      digitalWrite(NET_ALERT_PIN, LOW);
     }
 
   }
