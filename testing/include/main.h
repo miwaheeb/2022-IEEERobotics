@@ -14,7 +14,7 @@
 #define THRESHOLD_TIME 5*MEASURE_TIME /* in milliseconds */
 #define FILTER_LENGTH THRESHOLD_TIME/MEASURE_TIME
 #define MIN_DISTANCE 50 /* in millimeters */
-#define MAX_DISTANCE 80 /* in millimeters */
+#define MAX_DISTANCE 356 /* in millimeters */
 
 /* Group settings */
 #define VL53L0X_I2C_ADDRESS 41

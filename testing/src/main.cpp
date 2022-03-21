@@ -176,8 +176,8 @@ void detect_objects()
       sensor->sampleIndex = (sensor->sampleIndex + 1) % FILTER_LENGTH;
       sensor->distanceAverage -= sensor->sampleWindow[sensor->sampleIndex];
 
-      sprintf(msg, "Average distance %dmm on address %d\n", measure.RangeMilliMeter, sensor->address);
-      debug_message(msg);
+      //sprintf(msg, "Average distance %dmm on address %d\n", measure.RangeMilliMeter, sensor->address);
+      //debug_message(msg);
 
       /* Store the new sample for later */
       sensor->sampleWindow[sensor->sampleIndex] = sensor->weightedSample;
