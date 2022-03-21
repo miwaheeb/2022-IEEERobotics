@@ -1,9 +1,9 @@
 #include "main.h"
 
 #define TCAADDR 0x72
-#define CUP_ALERT_PIN 76
-#define TREE_ALERT_PIN 77
-#define NET_ALERT_PIN 78
+#define CUP_ALERT_PIN 25
+#define TREE_ALERT_PIN 24
+#define NET_ALERT_PIN 23
 #define NOP __asm__ __volatile__ ("nop\n\t")
 /* attachInterrupt(digitalPinToInterrupt(pin), ISR, mode) ISR as function, mode:LOW CHANGE RISING FALLING... using rising */
 
@@ -50,7 +50,11 @@ void setup()
   sprintf(msg,"Setup complete. \nBeginning\n\n");
   debug_message(msg);
   delay(500);
-  
+
+  pinMode(CUP_ALERT_PIN, OUTPUT);
+  pinMode(TREE_ALERT_PIN, OUTPUT);
+  pinMode(NET_ALERT_PIN, OUTPUT);
+
   /* Enable polling timer */
   TIMSK2 = 1;
 
