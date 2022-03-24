@@ -1,0 +1,313 @@
+#include <Wire.h>
+#include <ZumoShield.h>
+#include <Adafruit_MotorShield.h>
+
+Adafruit_MotorShield AFMS = Adafruit_MotorShield();
+ZumoReflectanceSensorArray reflectanceSensorshort;
+ZumoReflectanceSensorArray reflectanceSensorlong;
+//Set up all four motors 
+Adafruit_DCMotor *M1 = AFMS.getMotor(1);
+Adafruit_DCMotor *M2 = AFMS.getMotor(2);
+Adafruit_DCMotor *M3 = AFMS.getMotor(3);
+Adafruit_DCMotor *M4 = AFMS.getMotor(4);
+
+char dir = FORWARD;
+const int speedi = 254;
+const int slow = 200;
+const int threshold = 1700;
+bool shortroad;
+int button = 1;
+volatile bool cup = 0;
+volatile bool tree = 0;
+volatile bool net = 0;
+
+void setup() {
+  if (!AFMS.begin()) {         // create with the default frequency 1.6KHz
+  // if (!AFMS.begin(1000)) {  // OR with a different frequency, say 1KHz
+    Serial.println("Could not find Motor Shield. Check wiring.");
+    while (1);
+  }
+  shortroad = 1;
+  Serial.println("Motor Shield found.");
+  pinMode(2, INPUT); // net
+  pinMode(19, INPUT); //tree
+  pinMode(18, INPUT); //cup
+
+  attachInterrupt(digitalPinToInterrupt(2), netdetect, RISING);
+  attachInterrupt(digitalPinToInterrupt(19), treedetect, RISING);
+  attachInterrupt(digitalPinToInterrupt(18), cupdetect, RISING);
+  
+
+
+  byte pins[] = {6,12,A1,7};
+  byte pinsl[] = {4,11,A0,5};
+  reflectanceSensorshort.init(pins,4);
+  reflectanceSensorlong.init(pinsl,4);
+  reflectanceSensorshort.calibrate();
+   reflectanceSensorlong.calibrate();
+  delay(20);
+
+  Serial.begin(115200);
+  
+  //start going forward
+  M1->run(FORWARD);
+  M2->run(FORWARD);
+  M1->setSpeed(speedi);
+  M2->setSpeed(speedi);
+  M3->setSpeed(0);
+  M4->setSpeed(0);
+  //delay(100); //decide how long to get out of the white square!
+  Serial.print("start\n");
+}
+
+//when on short road, turn or adjust left
+void turnleftshort(unsigned int sensorValues[]){
+   M3->run(BACKWARD);
+   M4->run(BACKWARD);
+   M1->run(RELEASE);
+   M2->run(RELEASE);
+   M3->setSpeed(slow);
+   M4->setSpeed(slow);
+   Serial.print("left\n");
+}
+
+//when on short road, turn or adjust right
+void turnrightshort(unsigned int sensorValues[]){
+  M3->run(FORWARD);
+  M4->run(FORWARD);
+  M1->run(RELEASE);
+  M2->run(RELEASE);
+  M3->setSpeed(slow);
+  M4->setSpeed(slow);
+   Serial.print("right\n");
+}
+
+//when on short road, turn or adjust left
+void turnleftlong(unsigned int sensorValues[]){
+   M1->run(BACKWARD);
+   M2->run(BACKWARD);
+   M3->run(RELEASE);
+   M4->run(RELEASE);
+   M1->setSpeed(slow);
+   M2->setSpeed(slow);
+}
+
+//when on long road, turn or adjust right
+void turnrightlong(unsigned int sensorValues[]){
+  M1->run(FORWARD);
+  M2->run(FORWARD);
+  M3->run(RELEASE);
+  M4->run(RELEASE);
+  M1->setSpeed(slow);
+  M2->setSpeed(slow);
+  
+}
+
+//stop all wheels
+void stopmotors(){
+  M1->run(RELEASE);
+  M2->run(RELEASE);
+  M3->run(RELEASE);
+  M4->run(RELEASE);
+  
+  M3->setSpeed(0);
+  M4->setSpeed(0);
+  M1->setSpeed(0);
+  M2->setSpeed(0);
+}
+
+
+void checkturnshort(unsigned int sensorValues[]){
+  if (sensorValues[0] <= threshold){ //does the far right sensor also detect white?
+      M1->run(RELEASE);
+      M2->run(RELEASE);
+      M3->run(RELEASE);
+      M4->run(RELEASE);
+      M1->setSpeed(0);
+      M2->setSpeed(0);
+      delay(1000);
+      M1->run(BACKWARD);
+      M2->run(BACKWARD);
+      M1->setSpeed(slow);
+      M2->setSpeed(slow);
+       Serial.print("turn\n");
+      shortroad = 0;
+      //read new sensor values
+    reflectanceSensorlong.read(sensorValues,QTR_EMITTERS_ON);
+    //while the middle two sensors are black, keep updating the sensor values
+    while (sensorValues[1] > threshold || sensorValues[2] > threshold){
+      reflectanceSensorlong.read(sensorValues,QTR_EMITTERS_ON);
+      Serial.print(sensorValues[1]);
+      Serial.print("\n");
+      Serial.print(sensorValues[2]);
+      Serial.print("\n");
+    }
+    //once the middle two sensors see white, stop M1 and M2 
+    //and run M3 and M4 forward on the long road section
+
+      M1->run(RELEASE);
+      M2->run(RELEASE);
+      M1->setSpeed(0);
+      M2->setSpeed(0);
+      
+    M3->run(FORWARD);
+    M4->run(FORWARD);
+    M3->setSpeed(speedi);
+    M4->setSpeed(speedi);
+    shortroad = 0;
+  }
+  else{ //no turn detected, continue straight
+    M1->run(dir);
+    M2->run(dir);
+    M3->run(RELEASE);
+    M4->run(RELEASE);
+    M1->setSpeed(speedi);
+    M2->setSpeed(speedi);
+     Serial.print("forward\n");
+  }
+}
+
+void checkturnlong(unsigned int sensorValues[]){
+  if (sensorValues[0] <= threshold){ //does the far right sensor also detect white? 
+     M1->run(RELEASE);
+      M2->run(RELEASE);
+      M3->run(RELEASE);
+      M4->run(RELEASE);
+      M1->setSpeed(0);
+      M2->setSpeed(0);
+      delay(1000);
+      M3->run(BACKWARD);
+      M4->run(BACKWARD);
+      M3->setSpeed(slow);
+      M4->setSpeed(slow);
+      Serial.print("turn\n");
+      shortroad = 1;
+      //read new sensor values
+    reflectanceSensorshort.read(sensorValues,QTR_EMITTERS_ON);
+    //while the middle two sensors are black, keep updating the sensor values
+    while (sensorValues[1] > threshold && sensorValues[2] > threshold){
+      reflectanceSensorshort.read(sensorValues,QTR_EMITTERS_ON);
+      
+    }
+    //once the middle two sensors see white, stop M1 and M2 
+    //and run M1 and M2 backward on the short road section
+
+      M3->run(RELEASE);
+      M4->run(RELEASE);
+      M3->setSpeed(0);
+      M4->setSpeed(0);
+      
+    M1->run(dir);
+    M2->run(dir);
+    M1->setSpeed(speedi);
+    M2->setSpeed(speedi);
+  }
+  else{
+    //check distance sensor here!!!!! Stop and change direction if wall detected too close
+    M3->run(dir);
+    M4->run(dir);
+    M1->run(RELEASE);
+    M2->run(RELEASE);
+    M3->setSpeed(speedi);
+    M4->setSpeed(speedi);
+    Serial.print("forward\n");
+  }
+}
+
+
+void loop() {
+  unsigned int sensorValues[4];
+  static uint16_t lastSampleTime = 0;
+  //currently, any of the three interrupts just stops the motors
+  if (net == 1){
+    stopmotors();
+  }
+  else if (tree == 1){
+    stopmotors();
+  }
+  else if (cup == 1){
+    stopmotors();
+  }
+  net = 0;
+  tree = 0;
+  cup = 0;
+  
+  //if it has been 100ms
+  if ((uint16_t)(millis() - lastSampleTime) >= 100)
+  {
+    lastSampleTime = millis();
+
+    //choose which sensor array to read from depending on whether we are on the short or long section of the road
+    if (!shortroad){
+      reflectanceSensorlong.read(sensorValues,QTR_EMITTERS_ON);
+    }
+    else{
+      reflectanceSensorshort.read(sensorValues,QTR_EMITTERS_ON);
+    }
+    
+  }
+   if (sensorValues[1] <= threshold){ //if center right sees white
+    if (sensorValues[2] <= threshold){ //and if center left sees white
+      if (shortroad){ //and if we are on the short section 
+        if (sensorValues[0] <= threshold && sensorValues[3] <= threshold){ //and if the far left and right sensors see white, assume we are at the very end and have entered the white square
+          //this will need to be tested to hardcode where to stop in the white square
+          M1->run(BACKWARD);
+          M2->run(BACKWARD);
+          M3->run(RELEASE);
+          M4->run(RELEASE);
+          M1->setSpeed(speedi);
+          M2->setSpeed(speedi);
+          M3->setSpeed(0);
+          M4->setSpeed(0);
+          delay(10); //enough to get fully in white square
+          M1->run(RELEASE);
+          M2->run(RELEASE);
+          M1->setSpeed(0);
+          M2->setSpeed(0);
+          while(1){
+            //trapped in here once done
+          }
+        }
+        //if not all white, just center two, check for a turn/align
+        else{
+          checkturnshort(sensorValues);
+        }
+      }
+      //if not on short road, it can't be all white (unless things be real messed up)
+      //check for a turn/align 
+      else{
+        checkturnlong(sensorValues);
+      }
+    }
+    //center right sees white, but left doesnt so turn right to get aligned
+    else{
+      if (!shortroad){
+        turnrightlong(sensorValues);
+      }
+      else{
+        turnrightshort(sensorValues);
+      }
+    }
+   }
+   //center right doesnt see white, check if left center sees right, and if so, align to the left
+    else if (sensorValues[2] <= threshold){
+      if (!shortroad){
+        turnleftlong(sensorValues);
+      }
+      else{
+      turnleftshort(sensorValues);
+      }
+    }   
+}
+
+void cupdetect(){
+  cup = 1;
+}
+
+void treedetect(){
+  tree = 1;
+}
+
+void netdetect(){
+  net = 1;
+}
