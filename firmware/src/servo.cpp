@@ -17,13 +17,13 @@ int servo_range(double percentage)
   return percentage / 100.0 * (MAX_RANGE-MIN_RANGE) + MIN_RANGE;
 }
 
-void linear_servo_setup()
+void servo_setup()
 {
   pinMode(PIN_MOTOR_1, OUTPUT);
   pinMode(PIN_MOTOR_ENABLE, OUTPUT);
 
   digitalWrite(PIN_MOTOR_ENABLE, HIGH);
 
-  linear_servo.attach(PIN_MOTOR_1, MIN_RANGE, MAX_RANGE);
+  tower_servo.attach(PIN_MOTOR_1, MIN_RANGE, MAX_RANGE);
 }
 
