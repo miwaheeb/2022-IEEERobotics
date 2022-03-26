@@ -3,6 +3,7 @@
  * Tested code for full range on ENV: UNO
  * ENV: Atmega already setup not tested
  * Change pins on production board
+ * https://datasheetspdf.com/pdf/791970/TowerPro/SG90/1
  */
 
 #include "globals.h"
