@@ -12,6 +12,7 @@ void setup()
 {
   Serial.begin(115200);
   interrupt_setup();
+  motor_shield_setup();
   line_follower_setup();
   escape_white_box();
 }
@@ -37,17 +38,17 @@ void loop()
   //currently, any of the three interrupts just stops the motors
   if (net == 1)
   {
-    stopmotors();
+    //stopmotors();
     Serial.print("NET\n");
   }
   else if (tree == 1)
   {
-    stopmotors();
+    //stopmotors();
     Serial.print("TREE\n");
   }
   else if (cup == 1)
   {
-    stopmotors();
+    //stopmotors();
     Serial.print("CUP\n");
   }
 
@@ -84,32 +85,34 @@ void loop()
         //and if we are on the short section 
         if (sensorValues[0] <= threshold && sensorValues[3] <= threshold)
         { 
+          /*@TODO: Enter white square function*/
+          
           //and if the far left and right sensors see white, assume we are at the very end and have entered the white square
           //this will need to be tested to hardcode where to stop in the white square
-          M1->run(BACKWARD);
-          M2->run(BACKWARD);
+          // M1->run(BACKWARD);
+          // M2->run(BACKWARD);
 
-          M3->run(RELEASE);
-          M4->run(RELEASE);
+          // M3->run(RELEASE);
+          // M4->run(RELEASE);
 
-          M1->setSpeed(speedi);
-          M2->setSpeed(speedi);
+          // M1->setSpeed(speedi);
+          // M2->setSpeed(speedi);
 
-          M3->setSpeed(0);
-          M4->setSpeed(0);
+          // M3->setSpeed(0);
+          // M4->setSpeed(0);
 
-          delay(10); //enough to get fully in white square
+          // delay(10); //enough to get fully in white square
 
-          M1->run(RELEASE);
-          M2->run(RELEASE);
+          // M1->run(RELEASE);
+          // M2->run(RELEASE);
 
-          M1->setSpeed(0);
-          M2->setSpeed(0);
+          // M1->setSpeed(0);
+          // M2->setSpeed(0);
 
-          while(1)
-          {
-            //trapped in here once done
-          }
+          // while(1)
+          // {
+          //   //trapped in here once done
+          // }
         }
         //if not all white, just center two, check for a turn/align
         else

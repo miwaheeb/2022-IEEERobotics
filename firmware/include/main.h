@@ -11,9 +11,9 @@ Adafruit_DCMotor *M2 = AFMS.getMotor(2);
 Adafruit_DCMotor *M3 = AFMS.getMotor(3);
 Adafruit_DCMotor *M4 = AFMS.getMotor(4);
 
-const int speedi = 254;
-const int slow = 200;
-const int threshold = 1700;
+const unsigned int speedi = 50;
+const unsigned int slow = 35;
+const unsigned int threshold = 1700;
 
 /* LINE FOLLOWER */
 ZumoReflectanceSensorArray reflectanceSensorshort;
