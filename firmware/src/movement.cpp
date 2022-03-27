@@ -1,12 +1,11 @@
 #include "globals.h"
 #include "movement.h"
 
-
 void debug_correct_stop()
 {
   Serial.println("Correcting.");
   //stopmotors();
-  delay(200);
+  delay(debug_delay);
 }
 
 void motor_shield_setup()
@@ -30,8 +29,8 @@ void escape_white_box()
   M1->run(FORWARD);
   M2->run(FORWARD);
 
-  M1->setSpeed(speedi);
-  M2->setSpeed(speedi);
+  M1->setSpeed(speediShort);
+  M2->setSpeed(speediShort);
 
   M3->setSpeed(0);
   M4->setSpeed(0);
@@ -54,8 +53,8 @@ void turnleftshort(unsigned int sensorValues[])
   M1->run(RELEASE);
   M2->run(RELEASE);
 
-  M3->setSpeed(slow);
-  M4->setSpeed(slow);
+  M3->setSpeed(slowM3);
+  M4->setSpeed(slowM4);
 
   Serial.print("left\n");
 }
@@ -71,8 +70,8 @@ void turnrightshort(unsigned int sensorValues[])
   M1->run(RELEASE);
   M2->run(RELEASE);
 
-  M3->setSpeed(slow);
-  M4->setSpeed(slow);
+  M3->setSpeed(slowM3);
+  M4->setSpeed(slowM4);
 
   Serial.print("right\n");
 }
@@ -171,8 +170,8 @@ void checkturnshort(unsigned int sensorValues[])
     M3->run(FORWARD);
     M4->run(FORWARD);
 
-    M3->setSpeed(speedi);
-    M4->setSpeed(speedi);
+    M3->setSpeed(speediLongM3);
+    M4->setSpeed(speediLongM4);
 
     shortroad = false; /* This is set twice */
 
@@ -186,8 +185,8 @@ void checkturnshort(unsigned int sensorValues[])
     M3->run(RELEASE);
     M4->run(RELEASE);
 
-    M1->setSpeed(speedi);
-    M2->setSpeed(speedi);
+    M1->setSpeed(speediShort);
+    M2->setSpeed(speediShort);
 
     Serial.print("forward\n");
   }
@@ -210,8 +209,8 @@ void checkturnlong(unsigned int sensorValues[])
     M3->run(BACKWARD);
     M4->run(BACKWARD);
 
-    M3->setSpeed(slow);
-    M4->setSpeed(slow);
+    M3->setSpeed(slowM3);
+    M4->setSpeed(slowM4);
 
     Serial.print("turn\n");
 
@@ -238,8 +237,8 @@ void checkturnlong(unsigned int sensorValues[])
     M1->run(dir);
     M2->run(dir);
 
-    M1->setSpeed(speedi);
-    M2->setSpeed(speedi);
+    M1->setSpeed(speediShort);
+    M2->setSpeed(speediShort);
   }
   else
   {
@@ -250,8 +249,8 @@ void checkturnlong(unsigned int sensorValues[])
     M1->run(RELEASE);
     M2->run(RELEASE);
 
-    M3->setSpeed(speedi);
-    M4->setSpeed(speedi);
+    M3->setSpeed(speediLongM3);
+    M4->setSpeed(speediLongM4);
 
     Serial.print("forward\n");
   }

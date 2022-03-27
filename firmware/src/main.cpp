@@ -57,7 +57,7 @@ void loop()
   cup = false;
   
   //if it has been 100ms
-  if ((uint16_t)(millis() - lastSampleTime) >= 50)
+  if ((uint16_t)(millis() - lastSampleTime) >= sensRefresh)
   {
     lastSampleTime = millis();
 

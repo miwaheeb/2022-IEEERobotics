@@ -35,8 +35,17 @@ extern Servo tower_servo;
 extern char dir;
 extern bool shortroad;
 extern int button;
-extern const unsigned int speedi;
+extern const unsigned int speediShort;
+
+extern const unsigned int speediLong;
+extern const unsigned int speediLongM3;
+extern const unsigned int speediLongM4;
+
 extern const unsigned int slow;
+extern const unsigned int slowM3;
+extern const unsigned int slowM4;
+
+extern const unsigned int debug_delay;
 extern const unsigned int threshold;
 extern volatile bool cup;
 extern volatile bool tree;
