@@ -22,11 +22,11 @@ void interrupt_setup()
     /* Initialize interrupt pins */
   pinMode(INTERRUPT_PIN_NET, INPUT); // net
   pinMode(INTERRUPT_PIN_TREE, INPUT); //tree
-  pinMode(INTERRUPT_PIN_CUP, INPUT); //cup
+  //pinMode(INTERRUPT_PIN_CUP, INPUT); //cup
 
   attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN_NET), netdetect, RISING);
   attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN_TREE), treedetect, RISING);
-  attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN_CUP), cupdetect, RISING);
+  //attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN_CUP), cupdetect, RISING);
 
 }
 
@@ -36,28 +36,28 @@ void loop()
   static uint16_t lastSampleTime = 0;
 
   //currently, any of the three interrupts just stops the motors
-  if (net == 1)
+  if (net == true)
   {
     //stopmotors();
     Serial.print("NET\n");
   }
-  else if (tree == 1)
+  else if (tree == true)
   {
-    //stopmotors();
+    stopmotors();
     Serial.print("TREE\n");
   }
-  else if (cup == 1)
-  {
-    //stopmotors();
-    Serial.print("CUP\n");
-  }
+  // else if (cup == true)
+  // {
+  //   //stopmotors();
+  //   Serial.print("CUP\n");
+  // }
 
-  net = 0;
-  tree = 0;
-  cup = 0;
+  net = false;
+  tree = false;
+  cup = false;
   
   //if it has been 100ms
-  if ((uint16_t)(millis() - lastSampleTime) >= 100)
+  if ((uint16_t)(millis() - lastSampleTime) >= 50)
   {
     lastSampleTime = millis();
 
@@ -133,7 +133,7 @@ void loop()
     {
       if (!shortroad)
       {
-        turnrightlong(sensorValues);
+        turnrightlong(sensorValues); //name?
       }
       else
       {
@@ -148,7 +148,7 @@ void loop()
   {
     if (!shortroad)
     {
-      turnleftlong(sensorValues);
+      turnleftlong(sensorValues); //name?
     }
     else
     {
@@ -159,15 +159,15 @@ void loop()
 
 void cupdetect()
 {
-  cup = 1;
+  cup = true;
 }
 
 void treedetect()
 {
-  tree = 1;
+  tree = true;
 }
 
 void netdetect()
 {
-  net = 1;
+  net = true;
 }

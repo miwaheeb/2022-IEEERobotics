@@ -10,8 +10,8 @@
 #include <Adafruit_MotorShield.h>
 
 /* INTERRUPT CONFIG */
-#define INTERRUPT_PIN_NET 2
-#define INTERRUPT_PIN_CUP 18
+#define INTERRUPT_PIN_NET 18
+#define INTERRUPT_PIN_CUP 0
 #define INTERRUPT_PIN_TREE 19
 
 /* LINE FOLLOW CONFIG */

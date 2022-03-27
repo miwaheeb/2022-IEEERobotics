@@ -11,8 +11,8 @@ Adafruit_DCMotor *M2 = AFMS.getMotor(2);
 Adafruit_DCMotor *M3 = AFMS.getMotor(3);
 Adafruit_DCMotor *M4 = AFMS.getMotor(4);
 
-const unsigned int speedi = 50;
-const unsigned int slow = 35;
+const unsigned int speedi = 100;
+const unsigned int slow = 80;
 const unsigned int threshold = 1700;
 
 /* LINE FOLLOWER */
@@ -37,9 +37,9 @@ byte reflectance_long_pins[]  = 	{4, 11, A0, 5};
 char dir = FORWARD;
 
 bool shortroad = true;
-volatile bool cup = 0;
-volatile bool tree = 0;
-volatile bool net = 0;
+volatile bool cup = false;
+volatile bool tree = false;
+volatile bool net = false;
 
 int button = 1;
 

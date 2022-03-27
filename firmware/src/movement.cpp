@@ -1,4 +1,13 @@
 #include "globals.h"
+#include "movement.h"
+
+
+void debug_correct_stop()
+{
+  Serial.println("Correcting.");
+  //stopmotors();
+  delay(200);
+}
 
 void motor_shield_setup()
 {
@@ -37,21 +46,25 @@ void escape_white_box()
 //when on short road, turn or adjust left
 void turnleftshort(unsigned int sensorValues[])
 {
-   M3->run(BACKWARD);
-   M4->run(BACKWARD);
+  debug_correct_stop();
 
-   M1->run(RELEASE);
-   M2->run(RELEASE);
+  M3->run(BACKWARD);
+  M4->run(BACKWARD);
 
-   M3->setSpeed(slow);
-   M4->setSpeed(slow);
+  M1->run(RELEASE);
+  M2->run(RELEASE);
 
-   Serial.print("left\n");
+  M3->setSpeed(slow);
+  M4->setSpeed(slow);
+
+  Serial.print("left\n");
 }
 
 //when on short road, turn or adjust right
 void turnrightshort(unsigned int sensorValues[])
 {
+  debug_correct_stop();
+
   M3->run(FORWARD);
   M4->run(FORWARD);
 
@@ -67,6 +80,8 @@ void turnrightshort(unsigned int sensorValues[])
 //when on short road, turn or adjust left
 void turnleftlong(unsigned int sensorValues[])
 {
+  debug_correct_stop();
+
   M1->run(BACKWARD);
   M2->run(BACKWARD);
 
@@ -82,6 +97,8 @@ void turnleftlong(unsigned int sensorValues[])
 //when on long road, turn or adjust right
 void turnrightlong(unsigned int sensorValues[])
 {
+  debug_correct_stop();
+
   M1->run(FORWARD);
   M2->run(FORWARD);
 
@@ -140,10 +157,7 @@ void checkturnshort(unsigned int sensorValues[])
     while (sensorValues[1] > threshold || sensorValues[2] > threshold)
     {
       reflectanceSensorlong.read(sensorValues,QTR_EMITTERS_ON);
-      Serial.print(sensorValues[1]);
-      Serial.print("\n");
-      Serial.print(sensorValues[2]);
-      Serial.print("\n");
+      Serial.println("Reversing");
     }
     //once the middle two sensors see white, stop M1 and M2 
     //and run M3 and M4 forward on the long road section

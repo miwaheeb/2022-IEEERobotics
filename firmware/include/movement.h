@@ -1,3 +1,6 @@
+#ifndef MOVEMENT_H
+#define MOVEMENT_H
+
 void motor_shield_setup();
 
 void escape_white_box();
@@ -19,3 +22,5 @@ void stopmotors();
 void checkturnshort(unsigned int sensorValues[]);
 
 void checkturnlong(unsigned int sensorValues[]);
+
+#endif
