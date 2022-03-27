@@ -8,6 +8,7 @@
 
 #include <ZumoShield.h>
 #include <Adafruit_MotorShield.h>
+#include "Adafruit_VL6180X.h"
 
 /* INTERRUPT CONFIG */
 #define INTERRUPT_PIN_NET 18

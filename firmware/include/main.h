@@ -31,6 +31,11 @@ const unsigned int threshold = 1700;
 ZumoReflectanceSensorArray reflectanceSensorshort;
 ZumoReflectanceSensorArray reflectanceSensorlong;
 
+/* WALL DISTANCE SENSOR */
+Adafruit_VL53L0X tof = Adafruit_VL53L0X();
+VL53L0X_RangingMeasurementData_t wallmeasure;
+
+
 /* SETUP FUNCTIONS */
 void motor_shield_setup();
 void interrupt_setup();
@@ -53,7 +58,9 @@ volatile bool cup = false;
 volatile bool tree = false;
 volatile bool net = false;
 
-int button = 1;
+bool button = false;
+int walldistance = 80;
+
 
 
 

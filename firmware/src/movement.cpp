@@ -243,6 +243,13 @@ void checkturnlong(unsigned int sensorValues[])
   else
   {
     //check distance sensor here!!!!! Stop and change direction if wall detected too close
+    tof.rangingTest(&wallmeasure, false);
+    if (wallmeasure.RangeMilliMeter < walldistance){
+      stopmotors();
+      delay(2000);
+      dir = BACKWARD;
+    }
+    
     M3->run(dir);
     M4->run(dir);
 
