@@ -8,7 +8,7 @@
 
 #include <ZumoShield.h>
 #include <Adafruit_MotorShield.h>
-#include "Adafruit_VL6180X.h"
+#include <Adafruit_VL53L0X.h>
 
 /* INTERRUPT CONFIG */
 #define INTERRUPT_PIN_NET 18
@@ -33,9 +33,9 @@ extern byte reflectance_long_pins[SENSORS_PER_ARRAY];
 
 extern Servo tower_servo;
 
-extern char dir;
+extern int dir;
 extern bool shortroad;
-extern int button;
+extern bool button;
 extern const unsigned int speediShort;
 
 extern const unsigned int speediLong;

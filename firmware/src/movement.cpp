@@ -1,6 +1,12 @@
 #include "globals.h"
 #include "movement.h"
 
+unsigned int walldistance = 80;
+
+/* WALL DISTANCE SENSOR */
+Adafruit_VL53L0X tof = Adafruit_VL53L0X();
+VL53L0X_RangingMeasurementData_t wallmeasure;
+
 void debug_correct_stop()
 {
   Serial.println("Correcting.");
