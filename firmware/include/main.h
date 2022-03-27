@@ -51,7 +51,7 @@ void treedetect();
 /* Initialize global data */
 byte reflectance_short_pins[] = 	{6, 12, A1, 7};
 byte reflectance_long_pins[]  = 	{4, 11, A0, 5};
-char dir = FORWARD;
+int dir = FORWARD;
 
 bool shortroad = true;
 volatile bool cup = false;
