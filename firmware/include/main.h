@@ -54,5 +54,6 @@ volatile bool tree = false;
 volatile bool net = false;
 
 bool button = false;
+int walldistance = 200;
 
 #endif /*MAIN_H */
