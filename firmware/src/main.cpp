@@ -56,11 +56,11 @@ void loop()
   tree = false;
   cup = false;
 
-  if (digitalRead(WALL_DETECTION_PIN) && dir == FORWARD && !shortroad){
+  /*if (digitalRead(WALL_DETECTION_PIN) && dir == FORWARD && !shortroad){
       stopmotors();
       dir = BACKWARD;
       Serial.print("wall detected\n");
-    }
+    }*/
   
   
   //if it has been 100ms
