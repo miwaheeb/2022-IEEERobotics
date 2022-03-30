@@ -30,9 +30,67 @@ void interrupt_setup()
 
 }
 
-void loop() 
+void short_section()
 {
   unsigned int sensorValues[4];
+  reflectanceSensorshort.read(sensorValues,QTR_EMITTERS_ON);
+
+  if (sensorValues[1] > threshold)
+  {
+    turnleftshort(sensorValues);
+    return;
+  }
+    
+  //if center right sees white
+  if (sensorValues[2] > threshold)
+  {
+    turnrightshort(sensorValues);
+    return;
+  }
+
+  if (sensorValues[0] > threshold || sensorValues[3] > threshold)
+  {
+    enter_white_box(speediShort);
+    return;
+  }
+
+  checkturnshort(sensorValues);
+
+}
+
+void long_section()
+{
+  unsigned int sensorValues[4];
+  reflectanceSensorlong.read(sensorValues,QTR_EMITTERS_ON);
+
+  if (sensorValues[1] > threshold)
+  {
+    turnleftlong(sensorValues);
+    return;
+  }
+    
+  //if center right sees white
+  if (sensorValues[2] > threshold)
+  {
+    turnrightlong(sensorValues);
+    return;
+  }
+
+  if (sensorValues[0] > threshold || sensorValues[3] > threshold)
+  {
+    //Should we ever get here?
+    //enter_white_box(speediShort);
+    //Engage crying protocol
+    return;
+  }
+
+  checkturnlong(sensorValues);
+
+}
+
+void loop() 
+{
+
   static uint16_t lastSampleTime = 0;
 
   //currently, any of the three interrupts just stops the motors
@@ -69,99 +127,16 @@ void loop()
     lastSampleTime = millis();
 
     //choose which sensor array to read from depending on whether we are on the short or long section of the road
-    if (!shortroad)
+    if(shortroad)
     {
-      reflectanceSensorlong.read(sensorValues,QTR_EMITTERS_ON);
+      short_section();
+      return;
     }
-    else
-    {
-      reflectanceSensorshort.read(sensorValues,QTR_EMITTERS_ON);
-    }
+    
+    long_section();
     
   }
 
-  /**@TODO Function + Guard clause needed */
-  if (sensorValues[1] <= threshold)
-   { 
-     //if center right sees white
-    if (sensorValues[2] <= threshold)
-    { 
-      //and if center left sees white
-      if (shortroad)
-      { 
-        //and if we are on the short section 
-        if (sensorValues[0] <= threshold && sensorValues[3] <= threshold)
-        { 
-          /*@TODO: Enter white square function*/
-          
-          //and if the far left and right sensors see white, assume we are at the very end and have entered the white square
-          //this will need to be tested to hardcode where to stop in the white square
-          // M1->run(BACKWARD);
-          // M2->run(BACKWARD);
-
-          // M3->run(RELEASE);
-          // M4->run(RELEASE);
-
-          // M1->setSpeed(speedi);
-          // M2->setSpeed(speedi);
-
-          // M3->setSpeed(0);
-          // M4->setSpeed(0);
-
-          // delay(10); //enough to get fully in white square
-
-          // M1->run(RELEASE);
-          // M2->run(RELEASE);
-
-          // M1->setSpeed(0);
-          // M2->setSpeed(0);
-
-          // while(1)
-          // {
-          //   //trapped in here once done
-          // }
-        }
-        //if not all white, just center two, check for a turn/align
-        else
-        {
-          checkturnshort(sensorValues);
-        }
-      }
-      //if not on short road, it can't be all white (unless things be real messed up)
-      
-      else
-      {
-        //check for a turn/align 
-        checkturnlong(sensorValues);
-      }
-    }
-    //center right sees white, but left doesnt so turn right to get aligned
-    else
-    {
-      if (!shortroad)
-      {
-        turnrightlong(sensorValues); //name?
-      }
-      else
-      {
-        turnrightshort(sensorValues);
-      }
-    }
-   }
-
-   //center right doesnt see white, check if left center sees right, and if so, align to the left
-  /**@TODO Function + Guard clause needed */
-  else if (sensorValues[2] <= threshold)
-  {
-    if (!shortroad)
-    {
-      turnleftlong(sensorValues); //name?
-    }
-    else
-    {
-      turnleftshort(sensorValues);
-    }
-  }   
 }
 
 void cupdetect()

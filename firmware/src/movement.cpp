@@ -27,6 +27,40 @@ void motor_shield_setup()
   Serial.println("Motor Shield found.");
 }
 
+
+
+/**
+ * and if the far left and right sensors see white, assume we are at the very end and have entered the white square
+ * this will need to be tested to hardcode where to stop in the white square
+*/
+void enter_white_box(const unsigned int speedi)
+{
+    M1->run(BACKWARD);
+    M2->run(BACKWARD);
+
+    M3->run(RELEASE);
+    M4->run(RELEASE);
+
+    M1->setSpeed(speedi);
+    M2->setSpeed(speedi);
+
+    M3->setSpeed(0);
+    M4->setSpeed(0);
+
+    delay(10); //enough to get fully in white square
+
+    M1->run(RELEASE);
+    M2->run(RELEASE);
+
+    M1->setSpeed(0);
+    M2->setSpeed(0);
+
+    while(1)
+    {
+      //trapped in here once done
+    }
+}
+
 void escape_white_box()
 {
 
@@ -47,6 +81,8 @@ void escape_white_box()
   Serial.print("start\n");
 
 }
+
+
 
 //when on short road, turn or adjust left
 void turnleftshort(unsigned int sensorValues[])
