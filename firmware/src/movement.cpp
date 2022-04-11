@@ -1,7 +1,7 @@
 #include "globals.h"
 #include "movement.h"
 
-unsigned int walldistance = 80;
+unsigned int walldistance = 200;
 
 /* WALL DISTANCE SENSOR */
 Adafruit_VL53L0X tof = Adafruit_VL53L0X();
