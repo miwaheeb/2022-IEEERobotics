@@ -22,7 +22,7 @@ void interrupt_setup()
     /* Initialize interrupt pins */
   pinMode(INTERRUPT_PIN_NET, INPUT); // net
   pinMode(INTERRUPT_PIN_TREE, INPUT); //tree
-  pinMode(WALL_DETECTION_PIN, INPUT); //cup
+  //pinMode(WALL_DETECTION_PIN, INPUT); //cup
 
   attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN_NET), netdetect, RISING);
   attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN_TREE), treedetect, RISING);
@@ -97,11 +97,13 @@ void loop()
   if (net == true)
   {
     //stopmotors();
+    //delay(5000);
     Serial.print("NET\n");
   }
   else if (tree == true)
   {
-    stopmotors();
+    //stopmotors();
+    //delay(5000);
     Serial.print("TREE\n");
   }
   // else if (cup == true)

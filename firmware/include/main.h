@@ -25,6 +25,7 @@ const unsigned int sensRefresh = 25;  //line follow sens refresh rate
 const unsigned int debug_delay = 50;  //debug_correct_stop delay amount in ms
 
 const unsigned int threshold = 1700;
+const unsigned int walldistance = 150;
 //control block_1
 
 /* LINE FOLLOWER */

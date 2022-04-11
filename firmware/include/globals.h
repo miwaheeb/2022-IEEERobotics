@@ -39,6 +39,7 @@ extern int dir;
 extern bool shortroad;
 extern bool button;
 extern const unsigned int speediShort;
+extern const unsigned int walldistance;
 
 extern const unsigned int speediLong;
 extern const unsigned int speediLongM3;
