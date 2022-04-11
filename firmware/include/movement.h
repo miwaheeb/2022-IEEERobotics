@@ -3,6 +3,8 @@
 
 void motor_shield_setup();
 
+void enter_white_box(const unsigned int speedi);
+
 void escape_white_box();
 
 //when on short road, turn or adjust left
