@@ -6,10 +6,10 @@
 
 /* MOTOR CONFIG */
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
-Adafruit_DCMotor *M1 = AFMS.getMotor(1);
+Adafruit_DCMotor *M1 = AFMS.getMotor(4);
 Adafruit_DCMotor *M2 = AFMS.getMotor(2);
 Adafruit_DCMotor *M3 = AFMS.getMotor(3);
-Adafruit_DCMotor *M4 = AFMS.getMotor(4);
+Adafruit_DCMotor *M4 = AFMS.getMotor(1);
 
 //control block_1
 const unsigned int speediShort = 100;  //M1 M2, short white line section motor speed

@@ -1,6 +1,7 @@
 #include "globals.h"
 #include "movement.h"
 
+unsigned int walldistance = 200;
 //unsigned int walldistance = 80;
 
 /* WALL DISTANCE SENSOR */
