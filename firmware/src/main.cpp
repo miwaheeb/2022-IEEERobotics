@@ -14,7 +14,7 @@ void setup()
   interrupt_setup();
   motor_shield_setup();
   line_follower_setup();
-  escape_white_box();
+  //escape_white_box();
 }
 
 void interrupt_setup()
@@ -35,14 +35,14 @@ void short_section()
   unsigned int sensorValues[4];
   reflectanceSensorshort.read(sensorValues,QTR_EMITTERS_ON);
 
-  if (sensorValues[1] > threshold)
+  if (sensorValues[1] > threshold && sensorValues[2] < threshold)
   {
     turnleftshort(sensorValues);
     return;
   }
     
   //if center right sees white
-  if (sensorValues[2] > threshold)
+  if (sensorValues[2] > threshold && sensorValues[1] < threshold)
   {
     turnrightshort(sensorValues);
     return;
@@ -50,8 +50,8 @@ void short_section()
 
   if (sensorValues[0] > threshold || sensorValues[3] > threshold)
   {
-    enter_white_box(speediShort);
-    return;
+    //enter_white_box(speediShort);
+    //return;
   }
 
   checkturnshort(sensorValues);
@@ -63,14 +63,14 @@ void long_section()
   unsigned int sensorValues[4];
   reflectanceSensorlong.read(sensorValues,QTR_EMITTERS_ON);
 
-  if (sensorValues[1] > threshold)
+  if (sensorValues[1] > threshold && sensorValues[2] < threshold)
   {
     turnleftlong(sensorValues);
     return;
   }
     
   //if center right sees white
-  if (sensorValues[2] > threshold)
+  if (sensorValues[2] > threshold && sensorValues[1] < threshold)
   {
     turnrightlong(sensorValues);
     return;
@@ -81,7 +81,7 @@ void long_section()
     //Should we ever get here?
     //enter_white_box(speediShort);
     //Engage crying protocol
-    return;
+    //return;
   }
 
   checkturnlong(sensorValues);

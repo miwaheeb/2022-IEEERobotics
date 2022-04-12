@@ -237,7 +237,7 @@ void checkturnshort(unsigned int sensorValues[])
 
 void checkturnlong(unsigned int sensorValues[])
 {
-  if (sensorValues[0] <= threshold)
+  if (sensorValues[3] <= threshold)
   { //does the far right sensor also detect white? 
     M1->run(RELEASE);
     M2->run(RELEASE);
@@ -286,12 +286,12 @@ void checkturnlong(unsigned int sensorValues[])
   else
   {
     //check distance sensor here!!!!! Stop and change direction if wall detected too close
-    tof.rangingTest(&wallmeasure, false);
+    /*tof.rangingTest(&wallmeasure, false);
     if (wallmeasure.RangeMilliMeter < walldistance){
       stopmotors();
       delay(2000);
       dir = BACKWARD;
-    }
+    }*/
     
     M3->run(dir);
     M4->run(dir);

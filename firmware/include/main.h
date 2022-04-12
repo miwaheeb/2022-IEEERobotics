@@ -12,20 +12,20 @@ Adafruit_DCMotor *M3 = AFMS.getMotor(3);
 Adafruit_DCMotor *M4 = AFMS.getMotor(1);
 
 //control block_1
-const unsigned int speediShort = 55;  //M1 M2, short white line section motor speed
+const unsigned int speediShort = 100;  //M1 M2, short white line section motor speed
 const unsigned int speediLongM3= 100; //M3, long  white line section motor speed
-const unsigned int speediLongM4= 130; //M4, long  white line section motor speed
+const unsigned int speediLongM4= 100; //M4, long  white line section motor speed
 
 
-const unsigned int slow   = 55;       //motor correction speed (M1 & M2)
-const unsigned int slowM3 = 60;       //motor correction speed (M3)
-const unsigned int slowM4 = 90;       //motor correction speed (M4)
+const unsigned int slow   = 70;       //motor correction speed (M1 & M2)
+const unsigned int slowM3 = 70;       //motor correction speed (M3)
+const unsigned int slowM4 = 70;       //motor correction speed (M4)
 
 const unsigned int sensRefresh = 25;  //line follow sens refresh rate
 const unsigned int debug_delay = 50;  //debug_correct_stop delay amount in ms
 
 const unsigned int threshold = 1700;
-const unsigned int walldistance = 150;
+//const unsigned int walldistance = 150;
 //control block_1
 
 /* LINE FOLLOWER */
