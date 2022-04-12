@@ -13,6 +13,7 @@ Adafruit_DCMotor *M4 = AFMS.getMotor(1);
 
 //control block_1
 const unsigned int speediShort = 100;  //M1 M2, short white line section motor speed
+const unsigned int speediLong = 100;  //M1 M2, short white line section motor speed
 const unsigned int speediLongM3= 100; //M3, long  white line section motor speed
 const unsigned int speediLongM4= 100; //M4, long  white line section motor speed
 

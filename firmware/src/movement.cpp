@@ -96,8 +96,8 @@ void turnleftshort(unsigned int sensorValues[])
   M1->run(RELEASE);
   M2->run(RELEASE);
 
-  M3->setSpeed(slowM3);
-  M4->setSpeed(slowM4);
+  M3->setSpeed(slow*M3_MOD);
+  M4->setSpeed(slow * M4_MOD);
 
   Serial.print("left\n");
 }
@@ -113,8 +113,8 @@ void turnrightshort(unsigned int sensorValues[])
   M1->run(RELEASE);
   M2->run(RELEASE);
 
-  M3->setSpeed(slowM3);
-  M4->setSpeed(slowM4);
+  M3->setSpeed(slow*M3_MOD);
+  M4->setSpeed(slow * M4_MOD);
 
   Serial.print("right\n");
 }
@@ -130,8 +130,8 @@ void turnleftlong(unsigned int sensorValues[])
   M3->run(RELEASE);
   M4->run(RELEASE);
 
-  M1->setSpeed(slow);
-  M2->setSpeed(slow);
+  M1->setSpeed(slow*M1_MOD);
+  M2->setSpeed(slow*M2_MOD);
 
   Serial.print("Left long\n");
 }
@@ -147,8 +147,8 @@ void turnrightlong(unsigned int sensorValues[])
   M3->run(RELEASE);
   M4->run(RELEASE);
 
-  M1->setSpeed(slow);
-  M2->setSpeed(slow);
+  M1->setSpeed(slow*M1_MOD);
+  M2->setSpeed(slow*M2_MOD);
   
   Serial.print("Right long\n");
 }
@@ -184,8 +184,8 @@ void checkturnshort(unsigned int sensorValues[])
     M1->run(BACKWARD);
     M2->run(BACKWARD);
 
-    M1->setSpeed(slow);
-    M2->setSpeed(slow);
+    M1->setSpeed(slow*M1_MOD);
+    M2->setSpeed(slow*M2_MOD);
 
     Serial.print("turn\n");
 
@@ -213,8 +213,8 @@ void checkturnshort(unsigned int sensorValues[])
     M3->run(FORWARD);
     M4->run(FORWARD);
 
-    M3->setSpeed(speediLongM3);
-    M4->setSpeed(speediLongM4);
+    M3->setSpeed(speediLong*M3_MOD);
+    M4->setSpeed(speediLong*M4_MOD);
 
     shortroad = false; /* This is set twice */
 
@@ -228,8 +228,8 @@ void checkturnshort(unsigned int sensorValues[])
     M3->run(RELEASE);
     M4->run(RELEASE);
 
-    M1->setSpeed(speediShort);
-    M2->setSpeed(speediShort);
+    M1->setSpeed(speediShort*M1_MOD);
+    M2->setSpeed(speediShort*M2_MOD);
 
     Serial.print("forward\n");
   }
@@ -237,7 +237,7 @@ void checkturnshort(unsigned int sensorValues[])
 
 void checkturnlong(unsigned int sensorValues[])
 {
-  if (sensorValues[3] <= threshold)
+  if (sensorValues[0] <= threshold)
   { //does the far right sensor also detect white? 
     M1->run(RELEASE);
     M2->run(RELEASE);
@@ -252,8 +252,8 @@ void checkturnlong(unsigned int sensorValues[])
     M3->run(BACKWARD);
     M4->run(BACKWARD);
 
-    M3->setSpeed(slowM3);
-    M4->setSpeed(slowM4);
+    M3->setSpeed(slow*M3_MOD);
+    M4->setSpeed(slow*M4_MOD);
 
     Serial.print("turn\n");
 
@@ -280,18 +280,18 @@ void checkturnlong(unsigned int sensorValues[])
     M1->run(dir);
     M2->run(dir);
 
-    M1->setSpeed(speediShort);
-    M2->setSpeed(speediShort);
+    M1->setSpeed(speediShort*M1_MOD);
+    M2->setSpeed(speediShort*M2_MOD);
   }
   else
   {
     //check distance sensor here!!!!! Stop and change direction if wall detected too close
-    /*tof.rangingTest(&wallmeasure, false);
+    tof.rangingTest(&wallmeasure, false);
     if (wallmeasure.RangeMilliMeter < walldistance){
       stopmotors();
       delay(2000);
       dir = BACKWARD;
-    }*/
+    }
     
     M3->run(dir);
     M4->run(dir);
@@ -299,8 +299,8 @@ void checkturnlong(unsigned int sensorValues[])
     M1->run(RELEASE);
     M2->run(RELEASE);
 
-    M3->setSpeed(speediLongM3);
-    M4->setSpeed(speediLongM4);
+    M3->setSpeed(speediLong*M3_MOD);
+    M4->setSpeed(speediLong*M4_MOD);
 
     Serial.print("forward\n");
   }

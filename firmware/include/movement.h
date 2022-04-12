@@ -1,6 +1,13 @@
 #ifndef MOVEMENT_H
 #define MOVEMENT_H
 
+
+#define M1_MOD 1
+#define M2_MOD 1
+#define M3_MOD 1
+#define M4_MOD 1
+
+
 void motor_shield_setup();
 
 void enter_white_box(const unsigned int speedi);
