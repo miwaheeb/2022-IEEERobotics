@@ -22,7 +22,6 @@ void interrupt_setup()
     /* Initialize interrupt pins */
   pinMode(INTERRUPT_PIN_NET, INPUT); // net
   pinMode(INTERRUPT_PIN_TREE, INPUT); //tree
-  //pinMode(WALL_DETECTION_PIN, INPUT); //cup
 
   attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN_NET), netdetect, RISING);
   attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN_TREE), treedetect, RISING);
@@ -116,12 +115,6 @@ void loop()
   tree = false;
   cup = false;
 
-  /*if (digitalRead(WALL_DETECTION_PIN) && dir == FORWARD && !shortroad){
-      stopmotors();
-      dir = BACKWARD;
-      Serial.print("wall detected\n");
-    }*/
-  
   
   //if it has been 100ms
   if ((uint16_t)(millis() - lastSampleTime) >= sensRefresh)
