@@ -2,10 +2,10 @@
 #define MOVEMENT_H
 
 
-#define M1_MOD 1
-#define M2_MOD 1
-#define M3_MOD 1
-#define M4_MOD 1
+#define M1_MOD 1.1 //M4
+#define M2_MOD 1 //M2
+#define M3_MOD 1.05 //M3
+#define M4_MOD 1 //M1
 
 
 void motor_shield_setup();

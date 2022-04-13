@@ -14,7 +14,7 @@ void setup()
   interrupt_setup();
   motor_shield_setup();
   line_follower_setup();
-  //escape_white_box();
+  escape_white_box();
 }
 
 void interrupt_setup()
