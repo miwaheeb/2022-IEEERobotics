@@ -18,7 +18,7 @@ bool object_detected[CLUSTERS][CLUSTER_SENSORS]; /* Parallel detection status ar
 typedef bool Object[CLUSTER_SENSORS]; /* Detection pattern object */
 
 /* Digital pins 2-19*/
-Pin sensor_enable_pins[18] = {6,7,1,5,15,16,17,18,23,24,25,26,64,63,13,12,46,19};
+Pin sensor_enable_pins[15] = {6,7,1,5,15,16,17,18,26,64,63,13,12,46,19};
 
 /* Digital pin 22, 23, 24 */
 Pin detection_alert_pins[3] = {CUP_ALERT_PIN, TREE_ALERT_PIN, NET_ALERT_PIN};

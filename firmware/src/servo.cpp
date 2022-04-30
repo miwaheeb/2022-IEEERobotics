@@ -7,10 +7,18 @@
  */
 
 #include "globals.h"
+#include <Servo.h>
+
+/* LINEAR SERVO CONFIG */
+#define MIN_RANGE 500.0 /* Minimum range in microseconds for Tower Pro SG90 */
+#define MAX_RANGE 2400.0 /* Maximum range in microseconds for Tower Pro SG90 */
+
+
+Servo tower_servo;
 
 /**
- * @PARAM: percentage distance from gear
- * @RETURN: Percentage of stroke converted to microseconds
+ * @param percentage distance from gear
+ * @return percentage of stroke converted to microseconds
  *
 */
 int servo_range(double percentage)

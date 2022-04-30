@@ -1,13 +1,6 @@
 
 #include "main.h"
 
-/* Readability experiment, likely to fail */
-void wheels(Adafruit_DCMotor *wheel_a, Adafruit_DCMotor *wheel_b, void(Adafruit_DCMotor::*command)(uint8_t), uint8_t parameter)
-{
-  (wheel_a->*command)(parameter);
-  (wheel_b->*command)(parameter);
-}
-
 void setup() 
 {
   Serial.begin(115200);

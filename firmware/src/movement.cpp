@@ -1,13 +1,6 @@
 #include "globals.h"
 #include "movement.h"
 
-unsigned int walldistance = 200;
-//unsigned int walldistance = 80;
-
-/* WALL DISTANCE SENSOR */
-Adafruit_VL53L0X tof = Adafruit_VL53L0X();
-VL53L0X_RangingMeasurementData_t wallmeasure;
-
 void debug_correct_stop()
 {
   Serial.println("Correcting.");
@@ -70,9 +63,9 @@ void escape_white_box()
   M1->run(FORWARD);
   M2->run(FORWARD);
 
-  M1->setSpeed(speediShort);
+  M1->setSpeed(slow*M1_MOD);
   delay(50);
-  M2->setSpeed(speediShort);
+  M2->setSpeed(slow*M2_MOD);
 
   M3->setSpeed(0);
   M4->setSpeed(0);
@@ -214,8 +207,8 @@ void checkturnshort(unsigned int sensorValues[])
     M3->run(FORWARD);
     M4->run(FORWARD);
 
-    M3->setSpeed(speediLong*M3_MOD);
-    M4->setSpeed(speediLong*M4_MOD);
+    M3->setSpeed(speedi*M3_MOD);
+    M4->setSpeed(speedi*M4_MOD);
 
     shortroad = false; /* This is set twice */
 
@@ -229,8 +222,8 @@ void checkturnshort(unsigned int sensorValues[])
     M3->run(RELEASE);
     M4->run(RELEASE);
 
-    M1->setSpeed(speediShort*M1_MOD);
-    M2->setSpeed(speediShort*M2_MOD);
+    M1->setSpeed(speedi*M1_MOD);
+    M2->setSpeed(speedi*M2_MOD);
 
     Serial.print("forward\n");
   }
@@ -281,8 +274,8 @@ void checkturnlong(unsigned int sensorValues[])
     M1->run(dir);
     M2->run(dir);
 
-    M1->setSpeed(speediShort*M1_MOD);
-    M2->setSpeed(speediShort*M2_MOD);
+    M1->setSpeed(speedi*M1_MOD);
+    M2->setSpeed(speedi*M2_MOD);
   }
   else
   {
@@ -300,8 +293,8 @@ void checkturnlong(unsigned int sensorValues[])
     M1->run(RELEASE);
     M2->run(RELEASE);
 
-    M3->setSpeed(speediLong*M3_MOD);
-    M4->setSpeed(speediLong*M4_MOD);
+    M3->setSpeed(speedi*M3_MOD);
+    M4->setSpeed(speedi*M4_MOD);
 
     Serial.print("forward\n");
   }
