@@ -25,7 +25,6 @@ extern const unsigned int debug_delay;
 extern const unsigned int threshold;
 
 /* MOVEMENT FUNCTIONS */
-
 void enter_white_box(const unsigned int speedi);
 void escape_white_box();
 void stopmotors();
