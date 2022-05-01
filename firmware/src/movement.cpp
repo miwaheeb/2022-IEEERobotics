@@ -1,6 +1,10 @@
 #include "globals.h"
 #include "movement.h"
 
+/**
+ * @brief Debug function used to indicate when a realignment occurred and optionally, stop the motors for physical inspection. 
+ * 
+ */
 void debug_correct_stop()
 {
   Serial.println("Correcting.");
@@ -8,6 +12,10 @@ void debug_correct_stop()
   delay(debug_delay);
 }
 
+/**
+ * @brief Setup is a one time call to initialize the Adafruit motorshield
+ * 
+ */
 void motor_shield_setup()
 {
   while (!AFMS.begin()) 
@@ -24,6 +32,7 @@ void motor_shield_setup()
 
 
 /**
+ * @brief Test function to use reflectance arrays to stop the robot and change conditions upon reaching the end of the track
  * and if the far left and right sensors see white, assume we are at the very end and have entered the white square
  * this will need to be tested to hardcode where to stop in the white square
 */
@@ -55,6 +64,10 @@ void enter_white_box(const unsigned int speedi)
     }
 }
 
+/**
+ * @brief Test function to use reflectance arrays to orient the robot and leave the white box using only the reflectance arrays
+ * 
+*/
 void escape_white_box()
 {
 
@@ -78,8 +91,11 @@ void escape_white_box()
 }
 
 
-
-//when on short road, turn or adjust left
+/**
+ * @brief Realign the robot to the left while oriented on the short road
+ * 
+ * @param sensorValues Reflectance array values available if adjustments require additional control logic
+ */
 void turnleftshort(unsigned int sensorValues[])
 {
   debug_correct_stop();
@@ -96,7 +112,11 @@ void turnleftshort(unsigned int sensorValues[])
   Serial.print("left\n");
 }
 
-//when on short road, turn or adjust right
+/**
+ * @brief Realign the robot to the right while oriented on the short road
+ * 
+ * @param sensorValues Reflectance array values available if adjustments require additional control logic
+ */
 void turnrightshort(unsigned int sensorValues[])
 {
   debug_correct_stop();
@@ -107,13 +127,18 @@ void turnrightshort(unsigned int sensorValues[])
   M1->run(RELEASE);
   M2->run(RELEASE);
 
-  M3->setSpeed(slow*M3_MOD);
+  M3->setSpeed(slow * M3_MOD);
   M4->setSpeed(slow * M4_MOD);
 
   Serial.print("right\n");
 }
 
-//when on short road, turn or adjust left
+
+/**
+ * @brief Realign the robot to the left while oriented on the long road
+ * 
+ * @param sensorValues Reflectance array values available if adjustments require additional control logic
+ */
 void turnleftlong(unsigned int sensorValues[])
 {
   debug_correct_stop();
@@ -124,13 +149,18 @@ void turnleftlong(unsigned int sensorValues[])
   M3->run(RELEASE);
   M4->run(RELEASE);
 
-  M1->setSpeed(slow*M1_MOD);
-  M2->setSpeed(slow*M2_MOD);
+  M1->setSpeed(slow * M1_MOD);
+  M2->setSpeed(slow * M2_MOD);
 
   Serial.print("Left long\n");
 }
 
-//when on long road, turn or adjust right
+
+/**
+ * @brief Realign the robot to the left while oriented on the long road when detected
+ * 
+ * @param sensorValues Reflectance array values available if adjustments require additional control logic
+ */
 void turnrightlong(unsigned int sensorValues[])
 {
   debug_correct_stop();
@@ -147,7 +177,11 @@ void turnrightlong(unsigned int sensorValues[])
   Serial.print("Right long\n");
 }
 
-//stop all wheels
+
+/**
+ * @brief Stop all motion for the robot
+ * 
+ */
 void stopmotors()
 {
   M1->run(RELEASE);
@@ -161,10 +195,16 @@ void stopmotors()
   M2->setSpeed(0);
 }
 
+/**
+ * @brief Polling function designed to change the robot state to move along the long road
+ * 
+ * @param sensorValues Reflectance array values available if adjustments require additional control logic
+ */
 void checkturnshort(unsigned int sensorValues[])
 {
   if (sensorValues[0] <= threshold)
-  { //does the far right sensor also detect white?
+  { 
+    //does the far right sensor also detect white?
     M1->run(RELEASE);
     M2->run(RELEASE);
     M3->run(RELEASE);
@@ -229,6 +269,12 @@ void checkturnshort(unsigned int sensorValues[])
   }
 }
 
+
+/**
+ * @brief Polling function designed to change the robot state to move along the short road when detected
+ * 
+ * @param sensorValues Reflectance array values available if adjustments require additional control logic
+ */
 void checkturnlong(unsigned int sensorValues[])
 {
   if (sensorValues[0] <= threshold)

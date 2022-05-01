@@ -17,6 +17,7 @@
 Servo tower_servo;
 
 /**
+ * @brief Convert percentage of stroke length to microseconds for more intuitive control (linear servo)
  * @param percentage distance from gear
  * @return percentage of stroke converted to microseconds
  *
@@ -26,6 +27,10 @@ int servo_range(double percentage)
   return percentage / 100.0 * (MAX_RANGE-MIN_RANGE) + MIN_RANGE;
 }
 
+/**
+ * @brief One time initialization of the servo component
+ * 
+ */
 void servo_setup()
 {
   pinMode(PIN_MOTOR_1, OUTPUT);

@@ -11,11 +11,14 @@ int horDirectionPin = 4; //Direction pin
 int horStepPin = 5; //Stepper pin
 int horEnablePin = 8; //Motor enable pin
 
+
 #define UP_PIN 9
 #define DOWN_PIN 10
 #define FORWARD_PIN 11
 #define BACK_PIN 12
 #define OPEN_PIN 13
+
+#define RESPONSE_WAIT 50
 
 #define STEP_INCH 2600
 #define STEP_MODIFIER 0.25F
@@ -41,7 +44,7 @@ void rotate(int stepper, int inches, float speed);
 
 void setup()
 {
-  /*Sets all pin to output; the microcontroller will send them(the pins) bits, it will not expect to receive any bits from thiese pins.*/
+  /* Sets all pin to output; the microcontroller will send them(the pins) bits, it will not expect to receive any bits from thiese pins. */
   pinMode(verDirectionPin, OUTPUT);
   pinMode(verStepPin, OUTPUT);
   pinMode(verEnablePin, OUTPUT);
@@ -50,8 +53,8 @@ void setup()
   pinMode(horStepPin, OUTPUT);
   pinMode(horEnablePin, OUTPUT);
  
-  digitalWrite(verEnablePin, HIGH); //Disables the motor, so it can rest untill it is called uppond
-  digitalWrite(horEnablePin, HIGH); //Disables the motor, so it can rest untill it is called uppond
+  digitalWrite(verEnablePin, HIGH); //Disables the motor until needed
+  digitalWrite(horEnablePin, HIGH); //Disables the motor until needed
 
   up_button.attach(UP_PIN,INPUT_PULLUP);
   down_button.attach(DOWN_PIN,INPUT_PULLUP);
@@ -68,6 +71,8 @@ void setup()
 void loop()
 {
 
+  delay(RESPONSE_WAIT);
+
   forward_button.update();
   back_button.update();
   up_button.update();
@@ -78,7 +83,6 @@ void loop()
   {
     Serial.println("Up");
     rotate(ver, 1, fast);
-    delay(50);
     input_guard = false;
     return;
   }
@@ -87,7 +91,6 @@ void loop()
   {
     Serial.println("Down");
     rotate(ver, -1, fast);
-    delay(50);
     input_guard = false;
     return;
   }
@@ -96,7 +99,6 @@ void loop()
   {
     Serial.println("Forward");
     rotate(hor, 1, fast);
-    delay(50);
     input_guard = false;
     return;
   }
@@ -105,25 +107,25 @@ void loop()
   {
     Serial.println("Back");
     rotate(hor, -1, fast);
-    delay(50);
     input_guard = false;
     return;
   }
 
   input_guard = true;
+
   if(open_button.fell())
   {
     Serial.println("Open");
     isOpen = !isOpen;
-    servo.write(100 - 90 * !isOpen);
-    delay(500);
+    servo.write(100 - 90 * !isOpen); /** @TODO: Refactor. Moves bucket between two defined states of open or closed */
+    delay(RESPONSE_WAIT*10);
   }
 
-  delay(50);
+
 }
 
-/*The rotate function turns the stepper motor. Tt accepts two arguments: 'inches' and 'speed'
-  if inches are negative, direction is opposite. Speed can be slow or fast*/
+/*The rotate function turns the stepper motor. It accepts two arguments: 'inches' and 'speed'
+  if inches are negative, direction is opposite. Speed can be slow or fast */
 void rotate(int stepper, int inches, float speed)
 {
   if (stepper == ver)
@@ -134,8 +136,8 @@ void rotate(int stepper, int inches, float speed)
     digitalWrite(horEnablePin, LOW); //Enabling the motor, so it will move when asked to
   }
  
-  /*This section looks at the 'steps' argument and stores 'HIGH' in the 'direction' variable if */
-  /*'steps' contains a positive number and 'LOW' if it contains a negative.*/
+  /* This section looks at the 'steps' argument and stores 'HIGH' in the 'direction' variable if */
+  /* 'steps' contains a positive number and 'LOW' if it contains a negative. */
   int direction;
  
   if (inches > 0){
@@ -154,7 +156,7 @@ void rotate(int stepper, int inches, float speed)
   else{
     digitalWrite(horDirectionPin, direction); //Writes the direction (from our if statement above), to the EasyDriver DIR pin
   }
-  /*Steppin'*/
+  /* Steppin' */
   if (stepper == ver)
   {
     for (int i = 0; i < steps; i++){

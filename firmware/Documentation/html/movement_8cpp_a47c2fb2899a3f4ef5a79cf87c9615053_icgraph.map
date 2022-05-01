@@ -1,0 +1,5 @@
+<map id="turnrightshort" name="turnrightshort">
+<area shape="rect" id="node1" title="Realign the robot to the right while oriented on the short road." alt="" coords="248,5,347,32"/>
+<area shape="rect" id="node2" href="$main_8cpp.html#ae834b7544488464b300b4194bc3d4dbc" title="Control logic while the robot is operating on the short road of the track." alt="" coords="100,5,200,32"/>
+<area shape="rect" id="node3" href="$main_8cpp.html#afe461d27b9c48d5921c00d521181f12f" title="Core control loop that implements a round&#45;robin w/ interrupts design to handle ISRs as events." alt="" coords="5,5,52,32"/>
+</map>

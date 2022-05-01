@@ -1,0 +1,4 @@
+<map id="turnleftshort" name="turnleftshort">
+<area shape="rect" id="node1" title="Realign the robot to the left while oriented on the short road." alt="" coords="5,5,96,32"/>
+<area shape="rect" id="node2" href="$movement_8cpp.html#a5e164cde69c22192b3c624f509ac7df2" title="Debug function used to indicate when a realignment occurred and optionally, stop the motors for physi..." alt="" coords="144,5,280,32"/>
+</map>

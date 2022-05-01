@@ -2,10 +2,7 @@
 #define GLOBALS_H
 
 #include <Arduino.h> 
-#include <SPI.h>
-#include <Wire.h>
 #include <ZumoShield.h>
-#include <Adafruit_VL53L0X.h>
 
 /* INTERRUPT CONFIG */
 #define INTERRUPT_PIN_NET 18
@@ -13,8 +10,8 @@
 #define INTERRUPT_PIN_TREE 19
 
 /* MOVEMENT PINS */
-#define PIN_MOTOR_1 9 /* Change for production board */
-#define PIN_MOTOR_ENABLE 8 /* Change for production board */
+#define PIN_MOTOR_1 9 
+#define PIN_MOTOR_ENABLE 8 
 
 extern ZumoReflectanceSensorArray reflectanceSensorshort;
 extern ZumoReflectanceSensorArray reflectanceSensorlong;

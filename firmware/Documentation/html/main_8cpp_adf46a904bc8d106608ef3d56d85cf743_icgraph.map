@@ -1,0 +1,4 @@
+<map id="long_section" name="long_section">
+<area shape="rect" id="node1" title="Control logic while the robot is operating on the long road of the track." alt="" coords="100,5,195,32"/>
+<area shape="rect" id="node2" href="$main_8cpp.html#afe461d27b9c48d5921c00d521181f12f" title="Core control loop that implements a round&#45;robin w/ interrupts design to handle ISRs as events." alt="" coords="5,5,52,32"/>
+</map>

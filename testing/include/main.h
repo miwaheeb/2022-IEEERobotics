@@ -13,7 +13,7 @@
 #define MEASURE_TIME 50
 #define THRESHOLD_TIME 5*MEASURE_TIME /* in milliseconds */
 #define FILTER_LENGTH THRESHOLD_TIME/MEASURE_TIME
-#define MIN_DISTANCE 50 /* in millimeters */
+#define MIN_DISTANCE 110 /* in millimeters */
 #define MAX_DISTANCE 356 /* in millimeters */
 
 /* Group settings */

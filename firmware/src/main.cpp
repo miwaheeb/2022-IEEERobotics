@@ -1,6 +1,10 @@
 
 #include "main.h"
 
+/**
+ * @brief One time initialization of for the primary microcontroller and components. Ends with leaving the white starting box
+ * 
+ */
 void setup() 
 {
   Serial.begin(115200);
@@ -10,6 +14,10 @@ void setup()
   escape_white_box();
 }
 
+/**
+ * @brief One time initialization of interrupt handlers. Called from main arduino setup.
+ * 
+ */
 void interrupt_setup()
 {
     /* Initialize interrupt pins */
@@ -22,6 +30,10 @@ void interrupt_setup()
 
 }
 
+/**
+ * @brief Control logic while the robot is operating on the short road of the track
+ * 
+ */
 void short_section()
 {
   unsigned int sensorValues[4];
@@ -50,6 +62,10 @@ void short_section()
 
 }
 
+/**
+ * @brief Control logic while the robot is operating on the long road of the track
+ * 
+ */
 void long_section()
 {
   unsigned int sensorValues[4];
@@ -80,6 +96,11 @@ void long_section()
 
 }
 
+
+/**
+ * @brief Core control loop that implements a round-robin w/ interrupts design to handle ISRs as events
+ * 
+ */
 void loop() 
 {
 
@@ -127,16 +148,28 @@ void loop()
 
 }
 
+/**
+ * @brief ISR to enable flags when a cup is detected from the secondary microcontroller
+ * 
+ */
 void cupdetect()
 {
   cup = true;
 }
 
+/**
+ * @brief ISR to enable flags when a tree is detected from the secondary microcontroller
+ * 
+ */
 void treedetect()
 {
   tree = true;
 }
 
+/**
+ * @brief ISR to enable flags when a net is detected from the secondary microcontroller
+ * 
+ */
 void netdetect()
 {
   net = true;

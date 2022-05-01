@@ -1,0 +1,5 @@
+<map id="treedetect" name="treedetect">
+<area shape="rect" id="node1" title="ISR to enable flags when a tree is detected from the secondary microcontroller." alt="" coords="264,5,344,32"/>
+<area shape="rect" id="node2" href="$main_8h.html#adc8db9502aca01bcdf1d433e9f46d16b" title="One time initialization of interrupt handlers. Called from main arduino setup." alt="" coords="108,5,216,32"/>
+<area shape="rect" id="node3" href="$main_8cpp.html#a4fc01d736fe50cf5b977f755b675f11d" title="One time initialization of for the primary microcontroller and components. Ends with leaving the whit..." alt="" coords="5,5,60,32"/>
+</map>

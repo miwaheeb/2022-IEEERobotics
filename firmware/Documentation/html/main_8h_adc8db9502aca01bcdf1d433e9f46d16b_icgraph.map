@@ -1,0 +1,4 @@
+<map id="interrupt_setup" name="interrupt_setup">
+<area shape="rect" id="node1" title="One time initialization of interrupt handlers. Called from main arduino setup." alt="" coords="108,5,216,32"/>
+<area shape="rect" id="node2" href="$main_8cpp.html#a4fc01d736fe50cf5b977f755b675f11d" title="One time initialization of for the primary microcontroller and components. Ends with leaving the whit..." alt="" coords="5,5,60,32"/>
+</map>

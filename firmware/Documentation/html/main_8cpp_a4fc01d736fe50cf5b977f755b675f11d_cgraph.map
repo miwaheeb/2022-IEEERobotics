@@ -1,0 +1,9 @@
+<map id="setup" name="setup">
+<area shape="rect" id="node1" title="One time initialization of for the primary microcontroller and components. Ends with leaving the whit..." alt="" coords="5,81,60,108"/>
+<area shape="rect" id="node2" href="$globals_8h.html#a8c40f36c1e147f62e26f982ba9dd9636" title="Test function to use reflectance arrays to orient the robot and leave the white box using only the re..." alt="" coords="111,5,240,32"/>
+<area shape="rect" id="node3" href="$main_8cpp.html#adc8db9502aca01bcdf1d433e9f46d16b" title="One time initialization of interrupt handlers. Called from main arduino setup." alt="" coords="121,56,229,83"/>
+<area shape="rect" id="node6" href="$main_8h.html#ab17a2fdc4b7930c73b2e4b816c65cd7a" title="Setup is a one time call to initialize pinout and calibrate reflectance array before use." alt="" coords="110,107,241,133"/>
+<area shape="rect" id="node7" href="$main_8h.html#a1b1f204ce477df6f7a31744a962f8e7d" title="Setup is a one time call to initialize the Adafruit motorshield." alt="" coords="108,157,243,184"/>
+<area shape="rect" id="node4" href="$main_8cpp.html#a0a378ea12acd5b0cead364e4c8bba6a9" title="ISR to enable flags when a net is detected from the secondary microcontroller." alt="" coords="293,31,369,57"/>
+<area shape="rect" id="node5" href="$main_8cpp.html#a94e8b73e8f7759f7b7f28477d9430d14" title="ISR to enable flags when a tree is detected from the secondary microcontroller." alt="" coords="291,81,371,108"/>
+</map>

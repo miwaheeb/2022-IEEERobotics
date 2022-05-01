@@ -1,0 +1,7 @@
+<map id="long_section" name="long_section">
+<area shape="rect" id="node1" title="Control logic while the robot is operating on the long road of the track." alt="" coords="5,56,100,83"/>
+<area shape="rect" id="node2" href="$globals_8h.html#a0c38fb907e0d54e5d543e7d90b84c6a4" title="Polling function designed to change the robot state to move along the short road when detected." alt="" coords="148,5,251,32"/>
+<area shape="rect" id="node3" href="$globals_8h.html#a661f91b0e32e9bd09d67462cf7054d7b" title="Realign the robot to the left while oriented on the long road." alt="" coords="157,56,242,83"/>
+<area shape="rect" id="node5" href="$globals_8h.html#a030ce3b5caa02a74875db7572df8a859" title="Realign the robot to the left while oriented on the long road when detected." alt="" coords="153,107,246,133"/>
+<area shape="rect" id="node4" href="$movement_8cpp.html#a5e164cde69c22192b3c624f509ac7df2" title="Debug function used to indicate when a realignment occurred and optionally, stop the motors for physi..." alt="" coords="299,81,435,108"/>
+</map>

@@ -2,6 +2,8 @@
 #define MAIN_H
 
 #include "globals.h"
+#include <SPI.h>
+#include <Wire.h>
 
 const unsigned int sensRefresh = 25;  //line follow sens refresh rate
 const unsigned int threshold = 1700;

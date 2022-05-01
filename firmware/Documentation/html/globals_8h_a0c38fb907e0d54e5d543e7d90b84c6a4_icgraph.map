@@ -1,0 +1,5 @@
+<map id="checkturnlong" name="checkturnlong">
+<area shape="rect" id="node1" title="Polling function designed to change the robot state to move along the short road when detected." alt="" coords="243,5,345,32"/>
+<area shape="rect" id="node2" href="$main_8cpp.html#adf46a904bc8d106608ef3d56d85cf743" title="Control logic while the robot is operating on the long road of the track." alt="" coords="100,5,195,32"/>
+<area shape="rect" id="node3" href="$main_8cpp.html#afe461d27b9c48d5921c00d521181f12f" title="Core control loop that implements a round&#45;robin w/ interrupts design to handle ISRs as events." alt="" coords="5,5,52,32"/>
+</map>

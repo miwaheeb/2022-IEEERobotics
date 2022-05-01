@@ -1,0 +1,10 @@
+<map id="debug_correct_stop" name="debug_correct_stop">
+<area shape="rect" id="node1" title="Debug function used to indicate when a realignment occurred and optionally, stop the motors for physi..." alt="" coords="395,81,531,108"/>
+<area shape="rect" id="node2" href="$globals_8h.html#a661f91b0e32e9bd09d67462cf7054d7b" title="Realign the robot to the left while oriented on the long road." alt="" coords="255,5,340,32"/>
+<area shape="rect" id="node5" href="$globals_8h.html#ae7a9b2dcf1ff057839e61d5038b43deb" title="Realign the robot to the left while oriented on the short road." alt="" coords="252,107,343,133"/>
+<area shape="rect" id="node7" href="$globals_8h.html#a030ce3b5caa02a74875db7572df8a859" title="Realign the robot to the left while oriented on the long road when detected." alt="" coords="251,56,344,83"/>
+<area shape="rect" id="node8" href="$globals_8h.html#a47c2fb2899a3f4ef5a79cf87c9615053" title="Realign the robot to the right while oriented on the short road." alt="" coords="248,157,347,184"/>
+<area shape="rect" id="node3" href="$main_8cpp.html#adf46a904bc8d106608ef3d56d85cf743" title="Control logic while the robot is operating on the long road of the track." alt="" coords="103,56,197,83"/>
+<area shape="rect" id="node4" href="$main_8cpp.html#afe461d27b9c48d5921c00d521181f12f" title="Core control loop that implements a round&#45;robin w/ interrupts design to handle ISRs as events." alt="" coords="5,81,52,108"/>
+<area shape="rect" id="node6" href="$main_8cpp.html#ae834b7544488464b300b4194bc3d4dbc" title="Control logic while the robot is operating on the short road of the track." alt="" coords="100,107,200,133"/>
+</map>

@@ -1,0 +1,12 @@
+<map id="loop" name="loop">
+<area shape="rect" id="node1" title="Core control loop that implements a round&#45;robin w/ interrupts design to handle ISRs as events." alt="" coords="5,145,52,172"/>
+<area shape="rect" id="node2" href="$main_8cpp.html#adf46a904bc8d106608ef3d56d85cf743" title="Control logic while the robot is operating on the long road of the track." alt="" coords="103,95,197,121"/>
+<area shape="rect" id="node7" href="$main_8cpp.html#ae834b7544488464b300b4194bc3d4dbc" title="Control logic while the robot is operating on the short road of the track." alt="" coords="100,171,200,197"/>
+<area shape="rect" id="node3" href="$globals_8h.html#a0c38fb907e0d54e5d543e7d90b84c6a4" title="Polling function designed to change the robot state to move along the short road when detected." alt="" coords="251,5,353,32"/>
+<area shape="rect" id="node4" href="$globals_8h.html#a661f91b0e32e9bd09d67462cf7054d7b" title="Realign the robot to the left while oriented on the long road." alt="" coords="259,56,345,83"/>
+<area shape="rect" id="node6" href="$globals_8h.html#a030ce3b5caa02a74875db7572df8a859" title="Realign the robot to the left while oriented on the long road when detected." alt="" coords="255,107,349,133"/>
+<area shape="rect" id="node5" href="$movement_8cpp.html#a5e164cde69c22192b3c624f509ac7df2" title="Debug function used to indicate when a realignment occurred and optionally, stop the motors for physi..." alt="" coords="404,157,540,184"/>
+<area shape="rect" id="node8" href="$globals_8h.html#a618b4875a774038b1e9b4538963e84a1" title="Polling function designed to change the robot state to move along the long road." alt="" coords="248,157,356,184"/>
+<area shape="rect" id="node9" href="$globals_8h.html#ae7a9b2dcf1ff057839e61d5038b43deb" title="Realign the robot to the left while oriented on the short road." alt="" coords="257,208,347,235"/>
+<area shape="rect" id="node10" href="$globals_8h.html#a47c2fb2899a3f4ef5a79cf87c9615053" title="Realign the robot to the right while oriented on the short road." alt="" coords="253,259,351,285"/>
+</map>

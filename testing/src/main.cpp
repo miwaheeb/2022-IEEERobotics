@@ -170,18 +170,11 @@ void detect_objects()
       /* Add the new sample to the average */
       int valid = sensor->VL53L0X.rangingTest(&measure, false);
       sensor->weightedSample = measure.RangeMilliMeter/FILTER_LENGTH;
-
-      //sprintf(msg, "Measurement taken at: %d on address %d was a %d measurement\n", measure.RangeMilliMeter, sensor->address, valid);
-      //debug_message(msg);
-
       sensor->distanceAverage += sensor->weightedSample;
 
       /* Remove the oldest sample */
       sensor->sampleIndex = (sensor->sampleIndex + 1) % FILTER_LENGTH;
       sensor->distanceAverage -= sensor->sampleWindow[sensor->sampleIndex];
-
-      //sprintf(msg, "Average distance %dmm on address %d\n", measure.RangeMilliMeter, sensor->address);
-      //debug_message(msg);
 
       /* Store the new sample for later */
       sensor->sampleWindow[sensor->sampleIndex] = sensor->weightedSample;

@@ -2,6 +2,7 @@
 #define MOVEMENT_H
 
 #include <Adafruit_MotorShield.h>
+#include <Adafruit_VL53L0X.h>
 
 #define M1_MOD 1.1 //M4
 #define M2_MOD 1 //M2
